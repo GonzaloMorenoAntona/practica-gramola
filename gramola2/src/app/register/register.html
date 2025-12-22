@@ -1,0 +1,30 @@
+<!-- register.component.html -->
+<div>
+  <h2>Registro de Bar</h2>
+  <label>Nombre del bar:</label>
+  <input [(ngModel)]="bar" name="barName" type="text">
+
+  <label>Email:</label>
+  <input [(ngModel)]="email" name="email" type="email">
+
+  <label>Contraseña:</label>
+  <input [(ngModel)]="pwd1" name="pwd1" type="password">
+
+  <label>Confirmar contraseña:</label>
+  <input [(ngModel)]="pwd2" name="pwd2" type="password">
+
+  <label>Spotify Client ID:</label>
+  <input [(ngModel)]="clientId" name="clientId" type="text">
+
+  <label>Spotify Client Secret:</label>
+  <input [(ngModel)]="clientSecret" name="clientSecret" type="text">
+
+  <button (click)="registrar()">Registrar</button>
+
+  <div *ngIf="registroOK" style="color: green;">
+    ¡Registro exitoso! Revisa tu correo para confirmar.
+  </div>
+  <div *ngIf="registroKO" style="color: red;">
+    Error en el registro. Por favor, inténtalo de nuevo.
+  </div>
+</div>

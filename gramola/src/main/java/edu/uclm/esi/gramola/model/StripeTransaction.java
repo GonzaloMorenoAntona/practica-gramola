@@ -1,0 +1,45 @@
+package edu.uclm.esi.gramola.model;
+    import java.util.Map;
+
+
+import org.json.JSONObject;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class StripeTransaction {
+    @Id @Column(length =36)
+    private String id;  
+
+    @Column(columnDefinition = "json")
+    private String data;
+ private String email;
+
+    public StripeTransaction() {
+        this.id = java.util.UUID.randomUUID().toString();
+    }
+    public String getId() {
+        return id;
+    }      
+
+    public void setId(String id) {
+        this.id = id;
+    }   
+
+    public Map<String, Object> getData() {
+        return new JSONObject(this.data).toMap();
+    }
+    public void setData(String data) {
+        this.data = data;
+    }
+    public String getEmail() {
+        return email;
+    }
+       public void setData(JSONObject jsoData) {
+       this.data = jsoData.toString();
+    }
+}
+
+

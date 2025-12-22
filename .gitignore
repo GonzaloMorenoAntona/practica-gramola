@@ -1,0 +1,33 @@
+# --- ANGULAR (Frontend) ---
+**/node_modules/
+gramola2/node_modules/
+dist/
+.angular/
+.sass-cache/
+connect.lock
+coverage/
+libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+typings/
+
+# --- JAVA SPRING BOOT (Backend) ---
+gramola/target/
+**/target/
+HELP.md
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.jar
+*.war
+
+# --- IDEs y SISTEMA ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- ARCHIVOS PESADOS ---
+*.zip

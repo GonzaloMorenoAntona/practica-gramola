@@ -1,0 +1,17 @@
+<div class="card">
+  <div class="card-header">
+    <strong class="card-title">Dispositivos</strong>
+    <button class="link-btn" type="button" (click)="getDevices()">Recargar</button>
+  </div>
+
+  <div class="list">
+    <div class="row" *ngFor="let device of devices">
+      <span>
+        <span *ngIf="device.is_active">🎶</span>
+        {{ device.name }} - {{ device.type }} - {{ device.id }}
+        <span *ngIf="device.is_active">🎶</span>
+      </span>
+    </div>
+  </div>
+  <div class="error" *ngIf="deviceError">{{ deviceError }}</div>
+</div>
