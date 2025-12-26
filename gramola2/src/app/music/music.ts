@@ -235,6 +235,4 @@ export class MusicComponent implements OnInit {
       error: (err) => this.songError = 'Se cobró, pero no se pudo añadir a la cola.'
     });
   }
-
-  
 }
