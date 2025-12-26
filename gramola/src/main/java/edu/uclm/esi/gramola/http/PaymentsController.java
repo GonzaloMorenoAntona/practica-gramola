@@ -93,4 +93,23 @@ public class PaymentsController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al confirmar el pago", e);
         }
     }
+    @PostMapping("/prepay-song")
+    public Map<String, String> prepaySong(@RequestBody Map<String, Object> body) {
+        try {
+            String songName = (String) body.get("songName");
+            // Precio fijo de 1.00€ (100 céntimos)
+            long amount = 100L; 
+            
+            // Llamamos al PaymentService para preparar el pago
+            String clientSecret = this.service.prepareSongPayment(songName, amount);
+
+            // Devolvemos la respuesta en formato JSON
+            Map<String, String> response = new HashMap<>();
+            response.put("clientSecret", clientSecret);
+            return response;
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al preparar el pago: " + e.getMessage());
+        }
+    }
 }

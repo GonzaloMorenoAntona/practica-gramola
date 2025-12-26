@@ -54,7 +54,7 @@ public class PaymentService {
         public User findByCreationToken(String token) {
             return userDao.findByCreationToken_Id(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token inválido"));
-}
+        }
 
         public StripeTransaction findTransactionById(String id) {
             return transactionRepository.findById(id)
@@ -67,5 +67,19 @@ public class PaymentService {
         user.setValidationDate(new Date());
         userDao.save(user);
     }
+
+    public String prepareSongPayment(String songName, long amountInCents) throws Exception {
+    PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+            .setAmount(amountInCents) // El precio en céntimos
+            .setCurrency("eur")
+            .setDescription("Canción: " + songName)
+            .setAutomaticPaymentMethods(
+                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()
+            )
+            .build();
+
+    PaymentIntent intent = PaymentIntent.create(params);
+    return intent.getClientSecret();
+}
 }
 

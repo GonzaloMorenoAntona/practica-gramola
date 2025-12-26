@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { RegisterComponent } from './register/register';
 import { Login } from "./login/login";
 import { PaymentComponent } from "./payments/payments";
@@ -7,7 +7,7 @@ import { PaymentComponent } from "./payments/payments";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RegisterComponent, Login, PaymentComponent],
+  imports: [RouterOutlet, RouterLink, RegisterComponent, Login, PaymentComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
