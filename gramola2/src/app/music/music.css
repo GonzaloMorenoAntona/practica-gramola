@@ -1,26 +1,35 @@
 .dashboard-container {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-  align-items: flex-start;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    align-items: flex-start;
 }
 
 .left-column {
-  flex: 1;      
-  min-width: 250px;
+    flex: 1;
+    min-width: 250px;
 }
 
 .right-column {
-  flex: 2;      
+    flex: 2;
 }
 
 /* Para móviles: una cosa debajo de otra */
 @media (max-width: 768px) {
-  .dashboard-container { flex-direction: column; }
+    .dashboard-container {
+        flex-direction: column;
+    }
 }
 
 /* Un toque visual al buscador para que destaque */
 .search-card {
-  border-left: 5px solid #1db954;
-  margin-bottom: 20px;
+    border-left: 5px solid #1db954;
+    margin-bottom: 20px;
+}
+
+.full-width {
+    margin: 0 auto;       /* Centrar horizontalmente */
+    max-width: 600px;     /* Que no se estire hasta el infinito, ancho de tablet */
+    flex: none;           /* Quitamos el flex grow para controlar el ancho */
+    width: 100%;
 }

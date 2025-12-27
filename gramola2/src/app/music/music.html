@@ -1,8 +1,14 @@
 <h2 style="text-align: center; margin: 20px 0; color: #333;">🎶 La Gramola 🎶</h2>
 
+<div style="text-align: center; margin-bottom: 20px;">
+  <button (click)="toggleMode()" class="link-btn" style="background: #333; color: white; border-radius: 20px; padding: 5px 15px;">
+    Modo Actual: <strong>{{ isAdmin ? 'DUEÑO' : 'CLIENTE' }}</strong>
+  </button>
+</div>
+
 <div class="dashboard-container">
 
-  <div class="left-column">
+  <div class="left-column" *ngIf="isAdmin">
     
     <div class="card">
       <div class="card-header">
@@ -42,7 +48,9 @@
       <div class="error" *ngIf="playlistError">{{ playlistError }}</div>
     </div>
 
-  </div> <div class="right-column">
+  </div> 
+
+  <div class="right-column" [class.full-width]="!isAdmin">
 
     <div class="card search-card" style="border-left: 5px solid #1db954;"> 
       <div class="card-header">
@@ -127,7 +135,10 @@
       </div>
     </div>
 
-  </div> </div> <div *ngIf="showPaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; justify-content: center; align-items: center;">
+  </div> 
+</div> 
+
+<div *ngIf="showPaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; justify-content: center; align-items: center;">
   
   <div style="background: white; padding: 30px; border-radius: 8px; width: 400px; text-align: center;">
     <h3>Confirmar Pago</h3>

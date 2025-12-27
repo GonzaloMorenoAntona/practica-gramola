@@ -43,6 +43,8 @@ export class MusicComponent implements OnInit {
   isProcessing: boolean = false;     // Para bloquear el botón
   paymentError: string = '';
 
+  isAdmin: boolean = false;
+
   stripePublicKey = 'pk_test_51SIV0yRm0ClsCnoVWXB3iOiEfdtda0z61OvJDYLWIIAq5FQZuIdFOAb4sEwtk8w2eEooAbJXOSKxsuGw3j56g5G900aYokx6Qx';
 
   constructor(private spoti : SpotifyService) {}
@@ -54,6 +56,9 @@ export class MusicComponent implements OnInit {
     this.stripe = Stripe(this.stripePublicKey);
   }
 
+  toggleMode() {
+    this.isAdmin = !this.isAdmin;
+  }
 
   resetErrors() {
     this.deviceError = undefined;
