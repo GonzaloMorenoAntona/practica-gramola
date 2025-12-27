@@ -57,4 +57,6 @@ public class User {
     public Date getValidationDate() { return validationDate; }
     public void setValidationDate(Date validationDate) { this.validationDate = validationDate; }
 
+    
+
 }

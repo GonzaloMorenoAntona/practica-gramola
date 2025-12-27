@@ -110,8 +110,12 @@ public class UserController {
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("clientId", user.getClientId());
+        String elBar = (user.getBarName() != null) ? user.getBarName() : ""; 
+        responseBody.put("bar", elBar);
+
         System.err.println("user.getClientId(): " + user.getClientId());
         return ResponseEntity.ok(responseBody);
+        
     }
 
     @DeleteMapping("/delete")

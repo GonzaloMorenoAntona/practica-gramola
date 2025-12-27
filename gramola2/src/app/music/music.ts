@@ -214,6 +214,14 @@ export class MusicComponent implements OnInit {
           if (result.paymentIntent.status === 'succeeded') {
             console.log('Pago OK:', result.paymentIntent.id);
             this.addSongToQueue(this.selectedTrack); // Llamamos a tu método de añadir
+
+            let barName = sessionStorage.getItem('barName');
+            if (!barName) barName = "Bar no identificado";
+
+          // Llamamos a guardar
+          this.spoti.saveSongInDb(this.selectedTrack, barName).subscribe({
+          error: (e) => console.error('Error al guardar', e)
+          });
             
             this.cancelPayment(); // Cerramos modal
             this.isProcessing = false;
