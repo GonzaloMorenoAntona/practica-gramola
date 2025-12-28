@@ -37,11 +37,20 @@
       <div class="list">
         <div class="row" *ngFor="let p of playlists" 
              (click)="selectPlaylist(p)"
-             style="cursor: pointer; padding: 8px; border-bottom: 1px solid #eee; transition: background 0.2s;">
+             style="cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; transition: background 0.2s;">
           
-          <span style="font-weight: 500;">🎵 {{ p.name }}</span>
-          <br>
-          <small style="color: #666;">({{ p.tracks.total }} canciones)</small>
+          <img [src]="p.images[0]?.url || 'assets/no-image.png'" 
+               width="50" height="50" 
+               style="border-radius: 4px; object-fit: cover; background: #333;"
+               alt="Portada">
+          
+          <div style="overflow: hidden;">
+            <span style="font-weight: bold; font-size: 1.1em; color: #222; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;">
+              {{ p.name }}
+              </span>
+            <small style="color: #666;">({{ p.tracks.total }} canciones)</small>
+          </div>
+
         </div>
       </div>
       
@@ -102,27 +111,25 @@
       <div class="list">
         <table style="width: 100%; border-collapse: collapse;">
           <thead>
-            <tr style="text-align: left; color: #888; border-bottom: 1px solid #ddd;">
-              <th style="padding: 8px;">#</th>
-              <th>Título</th>
+            <tr style="color: #888; text-align: left; border-bottom: 1px solid #ddd;">
+              <th style="padding: 10px;">#</th>
+              <th>Portada</th> <th>Título</th>
               <th>Artista</th>
-              <th>Álbum</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let track of queue; let i = index" 
-                class="track-row" 
-                style="border-bottom: 1px solid #eee;"
-                [style.background-color]="track.isPaid ? '#e6fffa' : 'transparent'"
-                [style.font-weight]="track.isPaid ? 'bold' : 'normal'">
-                
-              <td style="padding: 8px;">
-                 <span *ngIf="track.isPaid"></span> 
-                 {{ i + 1 }}
+            <tr *ngFor="let track of queue; let i = index" style="border-bottom: 1px solid #eee;">
+              
+              <td style="padding: 10px;">{{ i + 1 }}</td>
+              
+              <td>
+                <img [src]="track.album.images[2]?.url || track.album.images[0]?.url" 
+                    width="40" height="40" 
+                    style="border-radius: 4px; object-fit: cover; vertical-align: middle;">
               </td>
+
               <td style="font-weight: 500;">{{ track.name }}</td>
-              <td>{{ track.artists[0].name }}</td>
-              <td>{{ track.album.name }}</td>
+              <td style="color: #666;">{{ track.artists[0].name }}</td>
             </tr>
           </tbody>
         </table>
