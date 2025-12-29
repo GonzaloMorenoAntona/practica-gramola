@@ -1,5 +1,5 @@
 // src/app/music/music.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SpotifyService } from '../spotify'; 
@@ -15,6 +15,8 @@ declare var Stripe: any;
 })
 export class MusicComponent implements OnInit {
 
+  refreshInterval: any;
+  currentTrack: any = null;
 
   devices: any[] = [];
   currentDevice: any;
@@ -54,6 +56,20 @@ export class MusicComponent implements OnInit {
     this.getPlaylists();
     this.getCurrentPlayList();
     this.stripe = Stripe(this.stripePublicKey);
+
+    this.getRealQueue();
+
+    // 2. Activamos un reloj que actualiza la cola cada 5 segundos
+    this.refreshInterval = setInterval(() => {
+      this.getRealQueue();
+    }, 5000); 
+  }
+
+  // Esto se ejecuta cuando sales de la pantalla (para que el reloj no siga funcionando en segundo plano)
+  ngOnDestroy(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   toggleMode() {
@@ -162,6 +178,13 @@ export class MusicComponent implements OnInit {
     });
   } 
 
+  // Función para cerrar el buscador manualmente
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.searchError = undefined;
+  }
+
   openPaymentModal(track: any) {
     this.selectedTrack = track;
     this.showPaymentModal = true;
@@ -236,16 +259,32 @@ export class MusicComponent implements OnInit {
     });
   }
 
+  getRealQueue() {
+    console.log("Sincronizando con Spotify");
+    this.spoti.getUserQueue().subscribe({
+      next: (data: any) => {
+        // Guardamos en nuestra variable 'queue' la lista que viene de Spotify
+        this.currentTrack = data.currently_playing;
+        this.queue = data.queue; 
+      },
+      error: (e) => console.error("Error al obtener la cola:", e)
+    });
+  }
+
   // TU MÉTODO PARA AÑADIR A LA COLA 
   addSongToQueue(track: any) {
     this.spoti.addToQueue(track.uri).subscribe({
       next: () => {
-        alert(`Pago Recibido, "${track.name}" añadida a la cola.`);
-        this.searchQuery = '';
-        this.searchResults = [];
-        this.queue.push(track);
+        console.log(` "${track.name}" enviada a Spotify.`);
+
+        this.clearSearch(); // Cerramos el buscador
+
+        // TRUCO: Esperamos 1.5 segundos y pedimos la cola actualizada a Spotify
+        setTimeout(() => {
+            this.getRealQueue();
+        }, 1500);
       },
-      error: (err) => this.songError = 'Se cobró, pero no se pudo añadir a la cola.'
+      error: () => alert('Error al enviar a Spotify. ¿Tienes la música puesta?')
     });
   }
 }

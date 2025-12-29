@@ -120,11 +120,9 @@ export class SpotifyService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${sessionStorage.getItem("spotify_access_token")}`
     });
-    // La dirección de Spotify para meter cosas en la cola, pasandole el uri de la canción
     const url = `${this.spotiV1Url}/me/player/queue?uri=${uri}`;
-    return this.http.post(url, null, { headers }); // Se usa post porque estamos enviando ya la canción a poner
+    return this.http.post(url, null, { headers, responseType: 'text' as 'json' }); 
   }
-
   prepareSongPayment(songName: string): Observable<any> {
     return this.http.post('http://127.0.0.1:8080/payments/prepay-song', { songName });
   }
@@ -136,5 +134,13 @@ export class SpotifyService {
       bar: barName 
     };
     return this.http.post(url, body);
+  }
+
+  getUserQueue(): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${sessionStorage.getItem("spotify_access_token")}`
+    });
+    // Llamamos al endpoint oficial de la cola
+    return this.http.get(`${this.spotiV1Url}/me/player/queue`, { headers });
   }
 }
