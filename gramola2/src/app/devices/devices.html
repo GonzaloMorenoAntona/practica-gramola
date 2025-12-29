@@ -1,0 +1,17 @@
+<div class="card">
+  <div class="card-header">
+    <strong class="card-title">📡 Dispositivos</strong>
+    <button class="link-btn" type="button" (click)="getDevices()">Actualizar</button>
+  </div>
+  <div class="list">
+    <div class="row" *ngFor="let device of devices">
+      <span>
+        <span *ngIf="device.is_active">🔊</span>
+        {{ device.name }} 
+        <span *ngIf="device.is_active" style="color: green; font-weight: bold;">(Activo)</span>
+      </span>
+    </div>
+    <div *ngIf="devices.length === 0" style="padding:10px; color: #666;">Sin dispositivos detectados.</div>
+  </div>
+  <div class="error" *ngIf="deviceError">{{ deviceError }}</div>
+</div>

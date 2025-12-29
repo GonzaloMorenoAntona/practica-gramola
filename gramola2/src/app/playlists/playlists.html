@@ -1,0 +1,17 @@
+<div class="card">
+  <div class="card-header">
+    <strong class="card-title">📂 Mis Playlists</strong>
+    <button class="link-btn" type="button" (click)="getPlaylists()">Recargar</button>
+  </div>
+  <div class="list">
+    <div class="row playlist-row" *ngFor="let p of playlists" (click)="selectPlaylist(p)">
+      <img [src]="p.images[0]?.url || 'assets/no-image.png'" width="50" height="50" class="playlist-img">
+      
+      <div style="overflow: hidden;">
+        <span class="playlist-name">{{ p.name }}</span>
+        <small style="color: #666;">({{ p.tracks.total }} canciones)</small>
+      </div>
+    </div>
+  </div>
+  <div class="error" *ngIf="playlistError">{{ playlistError }}</div>
+</div>

@@ -1,0 +1,64 @@
+/* Tarjetas */
+.card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 15px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 1.1em;
+  color: #333;
+}
+
+/* Listas y Tablas */
+.list {
+  padding: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 10px;
+  text-align: left;
+}
+
+/* Botones */
+.link-btn {
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.link-btn:hover {
+  opacity: 0.9;
+}
+
+/* Input del buscador */
+input[type="text"] {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #1db954;
+}
