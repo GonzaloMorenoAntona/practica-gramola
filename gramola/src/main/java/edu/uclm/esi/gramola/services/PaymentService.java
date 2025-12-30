@@ -37,16 +37,21 @@ public class PaymentService {
     private StripeTransactionDao transactionRepository;
     
 
-    public StripeTransaction prepay() throws StripeException {
-       PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
-                    .setCurrency("eur")
-                    .setAmount(1000L)
-                    .build();
+    public StripeTransaction prepay(double amount) throws StripeException {
+        long amountInCents = (long) (amount * 100); // Conversión a céntimos
+
+        PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
+                .setCurrency("eur")
+                .setAmount(amountInCents) // <--- Único cambio real: usar la variable
+                .build();
+        
         PaymentIntent intent = PaymentIntent.create(createParams);
         JSONObject transactionDetails = new JSONObject(intent.toJson());
+        
         StripeTransaction st = new StripeTransaction();
         st.setData(transactionDetails);
         this.dao.save(st);
+        
         return st;
     }
 

@@ -9,18 +9,32 @@ export class PaymentService {
 
   constructor(private client: HttpClient) { }
 
-  prepay(): Observable<any> {
-    return this.client.get('http://localhost:8080/payments/prepay', {
+  // 1. NUEVO: Método para pedir la lista de precios al servidor
+  getPlans(): Observable<any[]> {
+    return this.client.get<any[]>('http://localhost:8080/payments/plans', { 
+      withCredentials: true 
+    });
+  }
+
+  // 2. MODIFICADO: Ahora recibe el ID (selectedPlanId) y usa POST para enviarlo
+  prepay(selectedPlanId: number): Observable<any> {
+    // Creamos el paquetito con el ID para enviarlo al backend
+    const body = { priceId: selectedPlanId };
+
+    // Cambiamos .get por .post porque estamos enviando datos (el body)
+    return this.client.post('http://localhost:8080/payments/prepay', body, {
       withCredentials: true,
       observe: 'response',
-      responseType: 'text'  
+      responseType: 'text' // Mantenemos esto IGUAL que lo tenías para que no falle
     });
   } 
+
+  // 3. ESTE SE QUEDA EXACTAMENTE IGUAL QUE LO TENÍAS
   confirm(transactionId: string, token: string): Observable<any> {
-  const body = { transactionId, token };
-  return this.client.post('http://localhost:8080/payments/confirm', body, {
-    withCredentials: true,
-    observe: 'response'
-  });
-}
+    const body = { transactionId, token };
+    return this.client.post('http://localhost:8080/payments/confirm', body, {
+      withCredentials: true,
+      observe: 'response'
+    });
+  }
 }

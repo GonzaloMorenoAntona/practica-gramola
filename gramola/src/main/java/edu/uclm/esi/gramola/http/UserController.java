@@ -76,7 +76,7 @@ public class UserController {
                 message.setTo(email);
                 message.setSubject("Bienvenido a Gramola - Confirma tu cuenta");
                 message.setText("Hola! Gracias por registrar tu bar.\n\n" +
-                                "Haz clic aquí para confirmar y pagar los 10€:\n" + enlace);
+                                "Haz clic aquí para confirmar y pagar. \n" + enlace);
 
                 mailSender.send(message);
                 System.out.println("Correo enviado a " + email);

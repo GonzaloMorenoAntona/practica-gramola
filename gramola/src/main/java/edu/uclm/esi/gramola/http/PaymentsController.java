@@ -3,6 +3,7 @@ package edu.uclm.esi.gramola.http;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import edu.uclm.esi.gramola.model.Price;
+
+import edu.uclm.esi.gramola.dao.PriceDao;
 import edu.uclm.esi.gramola.dao.UserDao;
 import edu.uclm.esi.gramola.model.StripeTransaction;
 import edu.uclm.esi.gramola.model.Token;
 import edu.uclm.esi.gramola.model.User;
 import edu.uclm.esi.gramola.services.PaymentService;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.Date; 
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("payments")
@@ -32,11 +39,23 @@ public class PaymentsController {
     private PaymentService service;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private PriceDao priceDao;
 
-    @GetMapping("/prepay")
-    public StripeTransaction prepay(HttpSession session) {
+    @GetMapping("/plans")
+    public List<Price> getSubscriptionPlans() {
+        return this.priceDao.findByType("SUBSCRIPTION");
+    }
+
+    @PostMapping("/prepay")
+    public StripeTransaction prepay(HttpSession session, @RequestBody Map<String, Long> body) {
         try {
-            StripeTransaction transactionDetails = this.service.prepay();
+            Long priceId = body.get("priceId");
+            Price p = this.priceDao.findById(priceId).orElseThrow(() -> new Exception("Plan no encontrado"));
+            
+            // Llamamos al servicio con el valor real (9.99 o 99.00)
+            StripeTransaction transactionDetails = this.service.prepay(p.getValue());
+            
             session.setAttribute("transactionDetails", transactionDetails);
             return transactionDetails;
         } catch (Exception e) {

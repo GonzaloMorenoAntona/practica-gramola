@@ -1,13 +1,33 @@
-<button (click)="prepay()">Go to payment</button>
-<form id="payment-form" style="display:none">
-<div id="card-element"></div>
-<button id="submit">
-<div class="spinner hidden" id="spinner"></div>
-<span id="button-text">Pay now</span>
-</button>
-<p id="card-error" role="alert"></p>
-<p class="result-message hidden">
-Payment succeeded, see the result in your
-<a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-</p>
-</form>
+<div class="payment-container" style="padding: 20px;">
+  
+  <div *ngIf="!transactionDetails">
+    <h2>Elige tu suscripción</h2>
+    
+    <div class="plans-list" style="margin-bottom: 20px;">
+      <div *ngFor="let plan of plans" style="margin-bottom: 10px;">
+        <label style="font-size: 1.1em; cursor: pointer;">
+          <input type="radio" name="plan" [(ngModel)]="selectedPlanId" [value]="plan.id">
+          <strong>{{ plan.name }}</strong> - {{ plan.value }}€
+        </label>
+      </div>
+    </div>
+
+    <button (click)="prepay()" [disabled]="!selectedPlanId" style="padding: 10px 20px; font-size: 16px;">
+      Ir al pago
+    </button>
+  </div>
+
+  <form id="payment-form" style="display:none; margin-top: 20px; max-width: 500px;">
+    <h3>Introduce tu tarjeta</h3>
+    
+    <div id="card-element" style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; border-radius: 4px;"></div>
+    
+    <button id="submit" style="width: 100%; padding: 10px;">
+      <div class="spinner hidden" id="spinner"></div>
+      <span id="button-text">Pagar ahora</span>
+    </button>
+    
+    <p id="card-error" role="alert" style="color: red; margin-top: 10px;"></p>
+  </form>
+
+</div>

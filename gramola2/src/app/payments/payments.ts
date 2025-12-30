@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { PaymentService } from '../payment-service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms';
 
 declare let Stripe: any
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './payments.html',
   styleUrl: './payments.css'
 })
@@ -16,23 +18,27 @@ export class PaymentComponent implements OnInit {
   stripe = new Stripe("pk_test_51SIV0yRm0ClsCnoVWXB3iOiEfdtda0z61OvJDYLWIIAq5FQZuIdFOAb4sEwtk8w2eEooAbJXOSKxsuGw3j56g5G900aYokx6Qx")
   transactionDetails: any;
   token? : string
+  plans: any[] = [];
+  selectedPlanId?: number;
   constructor(private PaymentService: PaymentService, private router : Router) { }
 
   ngOnInit(): void {
     const params = this.router.parseUrl(this.router.url).queryParams;
     this.token = params['token'];
+    this.PaymentService.getPlans().subscribe(data => this.plans = data);
   }
 
   prepay() {
-    this.PaymentService.prepay().subscribe({
+    if (!this.selectedPlanId) return alert("Selecciona una suscripción");
+
+    this.PaymentService.prepay(this.selectedPlanId).subscribe({
       next: (response: any) => {
-        this.transactionDetails = JSON.parse(response.body)
-        this.showForm()
+        // MANTENEMOS TU LÓGICA ORIGINAL
+        this.transactionDetails = JSON.parse(response.body); 
+        this.showForm();
       },
-      error: (response: any) => {
-        alert(response)
-      },
-    })
+      error: (e) => alert("Error: " + (e.error?.message || e.message))
+    });
   }
 
   showForm() {
