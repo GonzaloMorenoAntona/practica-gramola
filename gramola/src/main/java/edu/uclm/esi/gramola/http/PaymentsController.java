@@ -116,13 +116,17 @@ public class PaymentsController {
     public Map<String, String> prepaySong(@RequestBody Map<String, Object> body) {
         try {
             String songName = (String) body.get("songName");
-            // Precio fijo de 1.00€ (100 céntimos)
-            long amount = 100L; 
             
-            // Llamamos al PaymentService para preparar el pago
+            // 1. Buscamos el precio de tipo 'SONG' en la base de datos
+            // Como findByType devuelve una lista, cogemos el primero (.get(0))
+            Price songPrice = this.priceDao.findByType("SONG").get(0);
+            
+            // 2. Convertimos el precio de la BD (ej: 1.00) a céntimos para Stripe (ej: 100)
+            long amount = (long) (songPrice.getValue() * 100); 
+            
+            // 3. Llamamos al servicio con el precio dinámico
             String clientSecret = this.service.prepareSongPayment(songName, amount);
 
-            // Devolvemos la respuesta en formato JSON
             Map<String, String> response = new HashMap<>();
             response.put("clientSecret", clientSecret);
             return response;
@@ -130,5 +134,10 @@ public class PaymentsController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al preparar el pago: " + e.getMessage());
         }
+    }
+    @GetMapping("/song-price")
+    public Price getSongPrice() {
+        // Devuelve el objeto Precio de la canción (el primero que encuentre)
+        return this.priceDao.findByType("SONG").get(0);
     }
 }

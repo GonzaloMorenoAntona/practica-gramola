@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpotifyService } from '../spotify';
+import { PaymentService } from '../payment-service';
 
 declare var Stripe: any;
 
@@ -34,11 +35,12 @@ export class ClientComponent implements OnInit, OnDestroy {
   selectedTrack: any = null;
   isProcessing: boolean = false;
   paymentError: string = '';
+  songPrice: number = 0;
   
   // Tu clave pública de Stripe
   stripePublicKey = 'pk_test_51SIV0yRm0ClsCnoVWXB3iOiEfdtda0z61OvJDYLWIIAq5FQZuIdFOAb4sEwtk8w2eEooAbJXOSKxsuGw3j56g5G900aYokx6Qx';
 
-  constructor(private spoti: SpotifyService) {}
+  constructor(private spoti: SpotifyService, private paymentService: PaymentService) {}
 
   ngOnInit(): void {
     // 1. Inicializar Stripe
@@ -51,6 +53,14 @@ export class ClientComponent implements OnInit, OnDestroy {
     this.refreshInterval = setInterval(() => {
       this.getRealQueue();
     }, 5000);
+
+    this.paymentService.getSongPrice().subscribe({
+      next: (data: any) => {
+        this.songPrice = data.value; // Guardamos el valor (ej: 1.00)
+        console.log("Precio actual de la canción:", this.songPrice);
+      },
+      error: (e) => console.error("Error al obtener precio", e)
+    });
   }
 
   ngOnDestroy(): void {

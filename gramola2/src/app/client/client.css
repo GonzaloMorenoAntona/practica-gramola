@@ -43,9 +43,10 @@ td, th {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 8px 15px;
+  padding: 8px 25px;
   cursor: pointer;
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .link-btn:hover {

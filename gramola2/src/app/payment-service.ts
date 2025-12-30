@@ -37,4 +37,9 @@ export class PaymentService {
       observe: 'response'
     });
   }
+  getSongPrice(): Observable<any> {
+    return this.client.get('http://localhost:8080/payments/song-price', { 
+      withCredentials: true 
+    });
+  }
 }
