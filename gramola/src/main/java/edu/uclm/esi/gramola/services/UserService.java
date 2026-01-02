@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage; 
+import org.springframework.mail.javamail.JavaMailSender;
 
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,8 +20,7 @@ public class UserService {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private EmailService emailService;
-
+    private JavaMailSender javaMailSender;
     // UserService.java
     public void register(String bar, String email, String pwd, String clientId, String clientSecret) {
     // 1. Validar si ya existe un usuario con ese email y está activo → error
@@ -108,11 +109,13 @@ public class UserService {
         String url = "http://127.0.0.1:4200/reset-password?token=" + token.getId();
         
         // Enviamos el correo real
-        this.emailService.sendEmail(
-            email, 
-            "Recuperación de contraseña - La Gramola", 
-            "Has solicitado cambiar tu contraseña.\nHaz clic aquí para poner una nueva:\n" + url
-        );
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("gonza578.gm@gmail.com"); 
+        message.setTo(email);
+        message.setSubject("Recuperación de contraseña - La Gramola");
+        message.setText("Has solicitado cambiar tu contraseña.\nHaz clic aquí para poner una nueva:\n" + url);
+
+        this.javaMailSender.send(message);
     }
 
     public void resetPassword(String tokenId, String newPwd) {
