@@ -17,8 +17,8 @@ public class UserService {
 
     @Autowired
     private UserDao userDao;
-
-    
+    @Autowired
+    private EmailService emailService;
 
     // UserService.java
     public void register(String bar, String email, String pwd, String clientId, String clientSecret) {
@@ -74,7 +74,7 @@ public class UserService {
         this.userDao.save(user); // 
     }
     public User login(String email, String pwd) {
-        // pwd = PasswordUtil.hash(pwd); // Si no usas cifrado, coméntalo
+        //pwd = PasswordUtil.hash(pwd); // Si no usas cifrado, coméntalo
         User user = this.userDao.findById(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Bad email or password"));
 
@@ -93,7 +93,49 @@ public class UserService {
     public void delete(String email) {
         this.userDao.deleteById(email);
     }
-    
+    public void requestPasswordRecovery(String email) {
+        User user = this.userDao.findById(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existe"));
+
+        // Generamos un token nuevo de recuperación
+        Token token = new Token(); 
+        
+        // Asumiendo que añadiste el campo 'recoveryToken' en User.java como hablamos antes
+        user.setRecoveryToken(token); 
+        this.userDao.save(user);
+
+        // Construimos la URL para el FRONTEND (donde está el formulario de nueva contraseña)
+        String url = "http://127.0.0.1:4200/reset-password?token=" + token.getId();
+        
+        // Enviamos el correo real
+        this.emailService.sendEmail(
+            email, 
+            "Recuperación de contraseña - La Gramola", 
+            "Has solicitado cambiar tu contraseña.\nHaz clic aquí para poner una nueva:\n" + url
+        );
+    }
+
+    public void resetPassword(String tokenId, String newPwd) {
+        // Buscamos al usuario por el token de recuperación
+        User user = this.userDao.findByRecoveryTokenId(tokenId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token inválido o expirado"));
+
+        Token recoveryToken = user.getRecoveryToken();
+
+        // Validaciones de seguridad del token
+        if (recoveryToken.isUsed()) {
+             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este enlace ya fue usado");
+        }
+        
+        // Cambiamos la contraseña
+        user.setPwd(PasswordUtil.hash(newPwd)); // Recuerda hashear la nueva contraseña
+        
+        // Quemamos el token
+        recoveryToken.use();
+        this.userDao.save(user);
+    }
 }
+    
+
  
 

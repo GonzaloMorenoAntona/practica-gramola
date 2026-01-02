@@ -4,6 +4,11 @@
         <label for="email">Email:</label> 
         <input type="email" id="email" name="email" formControlName="email" required placeholder ="Enter your email">
     </div>
+    <div style="margin-top: 15px; text-align: center;">
+    <a routerLink="/forgot-password" style="color: #1db954; cursor: pointer;">
+        ¿Has olvidado tu contraseña?
+    </a>
+    </div>
 
     <!-- Mostrar errores -->
     <div *ngIf="this.loginForm.controls['email'].errors?.['required']">Email is required.</div>
@@ -12,6 +17,9 @@
     <div class="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" class="form-control" formControlName="password" required>
+    </div>
+    <div *ngIf="error" style="color: red; margin-bottom: 10px; font-weight: bold;">
+        {{ error }}
     </div>
     <button type="submit" class="btn btn-primary">Login</button>
 </form>

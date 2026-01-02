@@ -5,10 +5,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { UserService } from '../user'; // Asegúrate de la ruta
 import { SpotifyService } from '../spotify'; // Importa el servicio
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule], // Asegúrate de tener ReactiveFormsModule
+  imports: [CommonModule, ReactiveFormsModule, RouterLink], // Asegúrate de tener ReactiveFormsModule
   templateUrl: './login.html',
   styleUrl: './login.css'
 })

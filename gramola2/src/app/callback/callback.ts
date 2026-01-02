@@ -52,7 +52,10 @@ export class CallbackComponent implements OnInit {
       }, 
       error: (err) => { 
         console.error('Error fetching access token:', err); 
-        }
+        // AÑADE ESTO:
+        alert("Error conectando con el servidor de Spotify. Mira la consola (F12)");
+        this.router.navigateByUrl('/login'); // Te devuelve al inicio para reintentar
+      }
     });
 }
 

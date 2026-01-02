@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("users")
-@CrossOrigin(origins = "http://127.0.0.1:4200", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials = "true")
 public class UserController {
 
     @Autowired
@@ -121,6 +121,18 @@ public class UserController {
     @DeleteMapping("/delete")
     public void delete(@RequestParam String email) {
         this.userService.delete(email);
+    }
+    @PostMapping("/request-reset-pwd")
+    public void requestResetPwd(@RequestBody Map<String, String> body) {
+    String email = body.get("email");
+    this.userService.requestPasswordRecovery(email);
+}
+
+    @PostMapping("/reset-pwd")
+        public void resetPwd(@RequestBody Map<String, String> body) {
+        String token = body.get("token");
+        String newPwd = body.get("newPwd");
+        this.userService.resetPassword(token, newPwd);
     }
 }
 

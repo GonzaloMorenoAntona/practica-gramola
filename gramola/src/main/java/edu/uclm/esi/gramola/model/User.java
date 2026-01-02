@@ -28,6 +28,8 @@ public class User {
      @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "token_id", referencedColumnName = "id")
     private Token creationToken;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Token recoveryToken;
 
     // Getters y Setters CORRECTOS
     public String getEmail() { return email; }
@@ -56,6 +58,9 @@ public class User {
 
     public Date getValidationDate() { return validationDate; }
     public void setValidationDate(Date validationDate) { this.validationDate = validationDate; }
+
+    public Token getRecoveryToken() { return recoveryToken; }
+    public void setRecoveryToken(Token recoveryToken) { this.recoveryToken = recoveryToken; }
 
     
 
