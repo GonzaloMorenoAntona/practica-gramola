@@ -1,23 +1,35 @@
-<h2 style="text-align: center; margin: 20px 0; color: #333;">🎶 La Gramola 🎶</h2>
-
-<div style="text-align: center; margin-bottom: 20px;">
-  <button (click)="toggleMode()" class="link-btn" style="background: #333; color: white; border-radius: 20px; padding: 5px 15px; cursor: pointer;">
-    Modo Actual: <strong>{{ isAdmin ? 'DUEÑO 👨‍💼' : 'CLIENTE 🙋‍♂️' }}</strong>
-  </button>
-</div>
-
-<div class="dashboard-container">
-
-  <div class="left-column" *ngIf="isAdmin">
+<div class="main-wrapper">
+  
+  <div class="header-content">
+    <h2 class="main-title">La Gramola</h2>
     
-    <app-devices></app-devices>
-    
-    <app-playlists (playlistPlayed)="onPlaylistPlayed()"></app-playlists>
-    
-  </div> 
+    <div class="mode-toggle">
+      <span [class.active-text]="!isAdmin">Cliente</span>
+      <label class="switch">
+        <input type="checkbox" (change)="toggleMode()" [checked]="isAdmin">
+        <span class="slider round"></span>
+      </label>
+      <span [class.active-text]="isAdmin">Dueño</span>
+    </div>
+  </div>
 
-  <div class="right-column" [class.full-width]="!isAdmin">
-    <app-client [isFullWidth]="!isAdmin"></app-client>
-  </div> 
+  <div class="dashboard-layout">
+    
+    <div class="admin-column" *ngIf="isAdmin">
+      <h3 class="column-title">Panel de Control</h3>
+      
+      <div class="admin-module">
+        <app-devices></app-devices>
+      </div>
+      
+      <div class="admin-module">
+        <app-playlists (playlistPlayed)="onPlaylistPlayed()"></app-playlists>
+      </div>
+    </div> 
 
+    <div class="client-column" [class.full-width]="!isAdmin">
+      <app-client [isFullWidth]="!isAdmin"></app-client>
+    </div> 
+
+  </div>
 </div>

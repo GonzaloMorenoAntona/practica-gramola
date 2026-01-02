@@ -1,30 +1,44 @@
-<!-- register.component.html -->
-<div>
-  <h2>Registro de Bar</h2>
-  <label>Nombre del bar:</label>
-  <input [(ngModel)]="bar" name="barName" type="text">
+<div class="centered-container">
+  <div class="auth-card" style="max-width: 500px;"> <h2>Registrar Bar</h2>
+    
+    <div class="form-group">
+      <label>Nombre del establecimiento</label>
+      <input [(ngModel)]="bar" name="barName" type="text" placeholder="Ej: Bar Manolo">
+    </div>
 
-  <label>Email:</label>
-  <input [(ngModel)]="email" name="email" type="email">
+    <div class="form-group">
+      <label>Email de administrador</label>
+      <input [(ngModel)]="email" name="email" type="email" placeholder="admin@bar.com">
+    </div>
 
-  <label>Contraseña:</label>
-  <input [(ngModel)]="pwd1" name="pwd1" type="password">
+    <div style="display: flex; gap: 15px;">
+      <div class="form-group" style="flex: 1;">
+        <label>Contraseña</label>
+        <input [(ngModel)]="pwd1" name="pwd1" type="password">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Repetir</label>
+        <input [(ngModel)]="pwd2" name="pwd2" type="password">
+      </div>
+    </div>
 
-  <label>Confirmar contraseña:</label>
-  <input [(ngModel)]="pwd2" name="pwd2" type="password">
+    <div class="form-group">
+      <label>Spotify Client ID</label>
+      <input [(ngModel)]="clientId" name="clientId" type="text" style="font-family: monospace;">
+    </div>
 
-  <label>Spotify Client ID:</label>
-  <input [(ngModel)]="clientId" name="clientId" type="text">
+    <div class="form-group">
+      <label>Spotify Client Secret</label>
+      <input [(ngModel)]="clientSecret" name="clientSecret" type="text" style="font-family: monospace;">
+    </div>
 
-  <label>Spotify Client Secret:</label>
-  <input [(ngModel)]="clientSecret" name="clientSecret" type="text">
+    <button (click)="registrar()">CREAR CUENTA</button>
 
-  <button (click)="registrar()">Registrar</button>
-
-  <div *ngIf="registroOK" style="color: green;">
-    ¡Registro exitoso! Revisa tu correo para confirmar.
-  </div>
-  <div *ngIf="registroKO" style="color: red;">
-    Error en el registro. Por favor, inténtalo de nuevo.
+    <div *ngIf="registroOK" class="success-msg">
+      <b>¡Registro exitoso!</b><br> Revisa tu correo para confirmar la cuenta.
+    </div>
+    <div *ngIf="registroKO" class="error-msg">
+      Error en el registro. Por favor, inténtalo de nuevo.
+    </div>
   </div>
 </div>

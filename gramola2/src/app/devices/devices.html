@@ -1,12 +1,12 @@
 <div class="card">
   <div class="card-header">
-    <strong class="card-title">📡 Dispositivos</strong>
+    <strong class="card-title">Dispositivos</strong>
     <button class="link-btn" type="button" (click)="getDevices()">Actualizar</button>
   </div>
   <div class="list">
     <div class="row" *ngFor="let device of devices">
       <span>
-        <span *ngIf="device.is_active">🔊</span>
+        <span *ngIf="device.is_active"></span>
         {{ device.name }} 
         <span *ngIf="device.is_active" style="color: green; font-weight: bold;">(Activo)</span>
       </span>

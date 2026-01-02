@@ -1,8 +1,74 @@
-.card { background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.card-header { padding: 15px; background: #f9f9f9; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-.playlist-row { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
-.playlist-row:hover { background-color: #f0f0f0; }
-.playlist-img { border-radius: 4px; object-fit: cover; background: #333; }
-.playlist-name { font-weight: bold; font-size: 1.1em; color: #222; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
-.link-btn { background: none; border: none; color: #1db954; cursor: pointer; text-decoration: underline; }
-.error { color: red; padding: 10px; }
+.playlists-container {
+  color: #e6f1ff;
+}
+
+h3 {
+  color: #e6f1ff;
+  font-size: 1rem;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #233554;
+  padding-bottom: 5px;
+}
+
+/* Grid o Lista de Playlists */
+.playlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background-color: #0a192f;
+  border: 1px solid #233554;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.playlist-item:hover {
+  border-color: #64ffda;
+  transform: translateX(5px); /* Se mueve un poco a la derecha */
+}
+
+/* Imagen de la playlist */
+.playlist-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.playlist-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.playlist-name {
+  font-weight: 600;
+  color: #e6f1ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+}
+
+.playlist-tracks {
+  font-size: 0.8rem;
+  color: #8892b0;
+}
+
+/* Botón de Play */
+.play-icon {
+  color: #64ffda;
+  font-size: 1.2rem;
+  opacity: 0; /* Invisible hasta que pasas el ratón */
+  transition: opacity 0.2s;
+}
+
+.playlist-item:hover .play-icon {
+  opacity: 1;
+}

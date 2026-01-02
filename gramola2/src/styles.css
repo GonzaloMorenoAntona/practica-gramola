@@ -1,1 +1,136 @@
-/* You can add global styles to this file, and also import other style files */
+/* Reset básico y fuente */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body, html {
+  height: 100%;
+  /* CAMBIO: De negro a Azul Marino Profundo */
+  background-color: #0a192f; 
+  color: #ccd6f6; /* Texto gris muy claro, casi blanco */
+}
+
+/* --- CLASES DE UTILIDAD PARA TARJETAS --- */
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 20px;
+}
+
+/* La tarjeta bonita donde va el login/registro */
+.auth-card {
+  /* CAMBIO: Azul noche para las tarjetas */
+  background-color: #112240; 
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7); /* Sombra más integrada */
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #233554; /* Borde sutil */
+}
+
+.auth-card h2 {
+  margin-bottom: 30px;
+  font-weight: 700;
+  color: #e6f1ff; /* Blanco azulado */
+  letter-spacing: -0.5px;
+}
+
+/* --- FORMULARIOS --- */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #8892b0; /* Azul grisáceo para etiquetas */
+  font-weight: 500;
+}
+
+.form-control, input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  /* CAMBIO: Fondo del input un poco más claro que la tarjeta */
+  background-color: #1d2d50; 
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: #e6f1ff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+/* Efecto al hacer clic en el input */
+.form-control:focus, input:focus {
+  outline: none;
+  background-color: #172a45;
+  /* CAMBIO: Borde Cian Brillante */
+  border-color: #64ffda; 
+  box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+}
+
+/* --- BOTONES --- */
+button, .btn-primary {
+  width: 100%;
+  padding: 14px;
+  /* CAMBIO: Botón transparente con borde Cian (Estilo "Ghost") o Sólido */
+  background-color: transparent; 
+  color: #64ffda;
+  border: 2px solid #64ffda; /* Borde de neón */
+  border-radius: 5px; /* Bordes menos redondos para un look más "tech" */
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+  margin-top: 10px;
+}
+
+button:hover, .btn-primary:hover {
+  /* Al pasar el mouse, se rellena de color cian */
+  background-color: rgba(100, 255, 218, 0.1); 
+  transform: translateY(-3px); /* Flota un poco hacia arriba */
+  box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+}
+
+/* Si quieres el botón relleno sólido por defecto, usa esto en su lugar: */
+/*
+button {
+  background-color: #64ffda;
+  color: #0a192f;
+  border: none;
+}
+*/
+
+/* Enlaces */
+a {
+  color: #8892b0;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #64ffda; /* Cian al pasar el ratón */
+  text-decoration: underline;
+}
+
+/* Mensajes */
+.error-msg {
+  color: #ff6b6b; /* Rojo suave */
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+.success-msg {
+  color: #64ffda; /* El mismo cian para éxito */
+  margin-top: 15px;
+}

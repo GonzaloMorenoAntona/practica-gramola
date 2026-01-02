@@ -1,35 +1,95 @@
-.dashboard-container {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    align-items: flex-start;
+.main-wrapper {
+  padding: 20px;
+  max-width: 1400px; /* Un poco más ancho para que quepan las 2 columnas */
+  margin: 0 auto;
 }
 
-.left-column {
-    flex: 1;
-    min-width: 250px;
+/* Cabecera y Switch */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 15px;
 }
 
-.right-column {
-    flex: 2;
+.main-title {
+  color: #e6f1ff;
+  font-weight: 700;
+  margin: 0;
 }
 
-/* Para móviles: una cosa debajo de otra */
-@media (max-width: 768px) {
-    .dashboard-container {
-        flex-direction: column;
-    }
+/* Estilos del Switch (El que te gusta) */
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #8892b0;
+}
+.active-text { color: #64ffda; font-weight: bold; }
+.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #112240; transition: .4s; border: 1px solid #64ffda; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: #64ffda; }
+input:checked + .slider:before { transform: translateX(26px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+/* --- LAYOUT DE 2 COLUMNAS --- */
+.dashboard-layout {
+  display: flex;
+  gap: 25px;
+  align-items: flex-start;
 }
 
-/* Un toque visual al buscador para que destaque */
-.search-card {
-    border-left: 5px solid #1db954;
-    margin-bottom: 20px;
+/* Columna Dueño (Izquierda) */
+.admin-column {
+  flex: 0 0 350px; /* Ancho fijo de 350px */
+  background-color: rgba(17, 34, 64, 0.5); /* Fondo oscuro semitransparente */
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #233554;
 }
 
-.full-width {
-    margin: 0 auto;       /* Centrar horizontalmente */
-    max-width: 600px;     /* Que no se estire hasta el infinito, ancho de tablet */
-    flex: none;           /* Quitamos el flex grow para controlar el ancho */
+.column-title {
+  color: #64ffda;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #233554;
+  padding-bottom: 10px;
+}
+
+.admin-module {
+  margin-bottom: 20px;
+  background-color: #112240; /* Fondo tarjeta admin */
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #233554; /* Borde sutil */
+}
+
+/* Columna Cliente (Derecha) */
+.client-column {
+  flex: 1; /* Ocupa el resto */
+  min-width: 0; /* Evita desbordamientos */
+}
+
+/* Cuando no es admin, ocupa todo */
+.client-column.full-width {
+  flex: 1;
+}
+
+/* Responsive: En móviles se pone uno debajo de otro */
+@media (max-width: 900px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  .admin-column {
     width: 100%;
+    flex: none;
+  }
 }
