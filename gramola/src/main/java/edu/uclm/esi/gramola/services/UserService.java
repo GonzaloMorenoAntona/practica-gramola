@@ -4,10 +4,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.mail.SimpleMailMessage; 
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.gramola.dao.UserDao;
@@ -17,73 +16,83 @@ import edu.uclm.esi.gramola.model.User;
 @Service
 public class UserService {
 
+    private final UserDao userDao;
+    private final JavaMailSender mailSender;
+
+    // Inyección por Constructor (Mejor práctica que @Autowired en atributos)
     @Autowired
-    private UserDao userDao;
-    @Autowired
-    private JavaMailSender javaMailSender;
-    // UserService.java
+    public UserService(UserDao userDao, JavaMailSender mailSender) {
+        this.userDao = userDao;
+        this.mailSender = mailSender;
+    }
+
     public void register(String bar, String email, String pwd, String clientId, String clientSecret) {
-    // 1. Validar si ya existe un usuario con ese email y está activo → error
+        // 1. Validar si existe
         Optional<User> existing = userDao.findById(email);
         if (existing.isPresent()) {
             User user = existing.get();
             if (user.getCreationToken() != null && user.getCreationToken().isUsed()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
             } else {
-                // Borrar cuenta anterior no confirmada
-                userDao.deleteById(email);
+                userDao.deleteById(email); // Limpiamos registros sucios anteriores
             }
         }
 
-        // 2. Crear nuevo usuario
+        // 2. Crear y guardar usuario
         User user = new User();
         user.setBarName(bar);
         user.setEmail(email);
         user.setPwd(PasswordUtil.hash(pwd));
         user.setClientId(clientId);
         user.setClientSecret(clientSecret);
-        Token token = new Token(); // genera un UUID en el constructor
+        
+        Token token = new Token();
         user.setCreationToken(token);
-
+        
         userDao.save(user);
 
-        System.out.println("Enlace de confirmación:");
-        System.out.println("http://127.0.0.1:8080/users/confirmToken/" + email + "?token=" + user.getCreationToken().getId());
+        // 3. Enviar email de bienvenida (Lógica movida desde el Controller)
+        String enlace = "http://127.0.0.1:8080/users/confirmToken/" + email + "?token=" + token.getId();
         
-}
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("gonza578.gm@gmail.com"); 
+        message.setTo(email);
+        message.setSubject("Bienvenido a Gramola - Confirma tu cuenta");
+        message.setText("Hola! Gracias por registrar tu bar.\n\n" +
+                        "Haz clic aquí para confirmar y pagar:\n" + enlace);
+
+        // Si falla el envío, saltará la excepción y el Controller devolverá error 500, que es lo correcto.
+        mailSender.send(message); 
+        System.out.println("Correo de bienvenida enviado a " + email);
+    }
 
     public void confirmToken(String email, String token) {
-        // Buscar en la BD (NO en HashMap)
         User user = this.userDao.findById(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         Token userToken = user.getCreationToken();
+        
         if (!userToken.getId().equals(token)) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid token");
         }
-
-        if (userToken.getCreationTime() < System.currentTimeMillis() - 180000) {
+        if (userToken.getCreationTime() < System.currentTimeMillis() - 180000) { // 3 minutos
             throw new ResponseStatusException(HttpStatus.GONE, "Token expired");
         }
-
         if (userToken.isUsed()) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Token already used");
         }
 
-        // Marcar token como usado y guardar
         userToken.use();
-        this.userDao.save(user); // 
+        this.userDao.save(user);
     }
+
     public User login(String email, String pwd) {
-        //pwd = PasswordUtil.hash(pwd); // Si no usas cifrado, coméntalo
         User user = this.userDao.findById(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Bad email or password"));
 
-        // Verifica si la cuenta está confirmada
         if (!user.getCreationToken().isUsed()) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Account not confirmed");
         }
-
         if (!PasswordUtil.verify(pwd, user.getPwd())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bad email or password");
         }
@@ -94,46 +103,37 @@ public class UserService {
     public void delete(String email) {
         this.userDao.deleteById(email);
     }
+
     public void requestPasswordRecovery(String email) {
         User user = this.userDao.findById(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existe"));
 
-        // Generamos un token nuevo de recuperación
         Token token = new Token(); 
-        
-        // Asumiendo que añadiste el campo 'recoveryToken' en User.java como hablamos antes
         user.setRecoveryToken(token); 
         this.userDao.save(user);
 
-        // Construimos la URL para el FRONTEND (donde está el formulario de nueva contraseña)
         String url = "http://127.0.0.1:4200/reset-password?token=" + token.getId();
         
-        // Enviamos el correo real
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("gonza578.gm@gmail.com"); 
         message.setTo(email);
         message.setSubject("Recuperación de contraseña - La Gramola");
         message.setText("Has solicitado cambiar tu contraseña.\nHaz clic aquí para poner una nueva:\n" + url);
 
-        this.javaMailSender.send(message);
+        this.mailSender.send(message);
     }
 
     public void resetPassword(String tokenId, String newPwd) {
-        // Buscamos al usuario por el token de recuperación
         User user = this.userDao.findByRecoveryTokenId(tokenId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token inválido o expirado"));
 
         Token recoveryToken = user.getRecoveryToken();
 
-        // Validaciones de seguridad del token
         if (recoveryToken.isUsed()) {
              throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este enlace ya fue usado");
         }
         
-        // Cambiamos la contraseña
-        user.setPwd(PasswordUtil.hash(newPwd)); // Recuerda hashear la nueva contraseña
-        
-        // Quemamos el token
+        user.setPwd(PasswordUtil.hash(newPwd)); 
         recoveryToken.use();
         this.userDao.save(user);
     }
