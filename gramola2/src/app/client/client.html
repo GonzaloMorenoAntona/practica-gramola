@@ -89,18 +89,24 @@
 </div>
 
 <div *ngIf="showPaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; justify-content: center; align-items: center;">
-  <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+  
+  <div style="background: white; color: #333; padding: 25px; border-radius: 8px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+    
     <h3 style="margin-top: 0; color: #0a192f;">Confirmar Pago</h3>
+    
     <div style="margin: 20px 0;">
-      <p>Canción: <strong>{{ selectedTrack?.name }}</strong></p>
-      <p>Importe: <strong style="color: #0a192f;">{{ songPrice }} €</strong></p> </div>
+      <p style="margin-bottom: 5px;">Canción: <strong>{{ selectedTrack?.name }}</strong></p>
+      <p>Importe: <strong style="color: #0a192f;">{{ songPrice }} €</strong></p> 
+    </div>
+
     <div style="padding: 10px; border: 1px solid #ddd; background: #f9f9f9; margin-bottom: 20px;">
       <div id="card-element"></div>
     </div>
+
     <div *ngIf="paymentError" style="color: red; margin-bottom: 15px;">{{ paymentError }}</div>
+
     <div style="display: flex; justify-content: flex-end; gap: 10px;">
       <button (click)="cancelPayment()" class="link-btn" style="background: #eee; color: #555;">Cancelar</button>
-      
       <button (click)="confirmPayment()" class="link-btn" [disabled]="isProcessing" style="background: #0a192f; color: white;">
         {{ isProcessing ? 'Procesando...' : 'Pagar Ahora' }}
       </button>

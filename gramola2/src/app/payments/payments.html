@@ -1,33 +1,51 @@
-<div class="payment-container" style="padding: 20px;">
-  
-  <div *ngIf="!transactionDetails">
-    <h2>Elige tu suscripción</h2>
+<div class="centered-container">
+  <div class="auth-card" style="max-width: 500px; width: 100%;">
     
-    <div class="plans-list" style="margin-bottom: 20px;">
-      <div *ngFor="let plan of plans" style="margin-bottom: 10px;">
-        <label style="font-size: 1.1em; cursor: pointer;">
-          <input type="radio" name="plan" [(ngModel)]="selectedPlanId" [value]="plan.id">
-          <strong>{{ plan.name }}</strong> - {{ plan.value }}€
-        </label>
+    <div *ngIf="!transactionDetails">
+      <h2 style="color: #e6f1ff; margin-bottom: 10px;">Suscripción Premium</h2>
+      <p style="color: #8892b0; margin-bottom: 30px;">Elige el plan que mejor se adapte a tu bar.</p>
+      
+      <div class="plans-container">
+        <div *ngFor="let plan of plans" 
+             class="plan-card" 
+             [class.selected]="selectedPlanId === plan.id"
+             (click)="selectedPlanId = plan.id">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div class="radio-circle">
+                <div class="radio-inner" *ngIf="selectedPlanId === plan.id"></div>
+              </div>
+              <span class="plan-name">{{ plan.name }}</span>
+            </div>
+            <span class="plan-price">{{ plan.value }} €</span>
+          </div>
+
+          <input type="radio" name="plan" [(ngModel)]="selectedPlanId" [value]="plan.id" style="display: none;">
+        </div>
       </div>
+
+      <button (click)="prepay()" [disabled]="!selectedPlanId" class="btn-action">
+        IR AL PAGO
+      </button>
     </div>
 
-    <button (click)="prepay()" [disabled]="!selectedPlanId" style="padding: 10px 20px; font-size: 16px;">
-      Ir al pago
-    </button>
+    <form id="payment-form" style="display:none; margin-top: 10px;">
+      <h3 style="color: #e6f1ff; margin-bottom: 20px; border-bottom: 1px solid #233554; padding-bottom: 10px;">
+        Datos de Pago
+      </h3>
+      
+      <div style="background-color: #f0f2f5; padding: 15px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #ccc;">
+        <div id="card-element"></div>
+      </div>
+      
+      <button id="submit" class="btn-action">
+        <div class="spinner hidden" id="spinner"></div>
+        <span id="button-text">PAGAR AHORA</span>
+      </button>
+      
+      <p id="card-error" role="alert" style="color: #ff6b6b; margin-top: 15px; font-size: 0.9em;"></p>
+    </form>
+
   </div>
-
-  <form id="payment-form" style="display:none; margin-top: 20px; max-width: 500px;">
-    <h3>Introduce tu tarjeta</h3>
-    
-    <div id="card-element" style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; border-radius: 4px;"></div>
-    
-    <button id="submit" style="width: 100%; padding: 10px;">
-      <div class="spinner hidden" id="spinner"></div>
-      <span id="button-text">Pagar ahora</span>
-    </button>
-    
-    <p id="card-error" role="alert" style="color: red; margin-top: 10px;"></p>
-  </form>
-
 </div>
