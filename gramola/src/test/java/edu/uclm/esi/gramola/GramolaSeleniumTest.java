@@ -137,45 +137,47 @@ public void testCompraCancionFallida() {
     assertTrue(errorMsg.isDisplayed());//validamos que el mensaje se vea 
 }
 
-    private void realizarFlujoLoginYBusqueda() { // metodos de apoyo para ambos test
+    private void realizarFlujoLoginYBusqueda() {
         // 1. LOGIN
+        System.out.println("Entrando en Gramola.");
         driver.get("http://127.0.0.1:4200/login");
         
-        WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email")));
-        email.sendKeys(USUARIO);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email"))).sendKeys(USUARIO);
         driver.findElement(By.id("password")).sendKeys(PASSWORD);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        gestionarPermisosSpotifySiAparecen(); // gestiona permisos si salen
+        gestionarPermisosSpotifySiAparecen(); 
 
-        // 2. ESPERAR A ENTRAR EN MUSIC
+        // 2. ESPERAR A ENTRAR (Verificar que estamos en Music)
         wait.until(ExpectedConditions.urlContains("/music"));
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-
         try {
+            // Buscamos el botón verde "Abrir Gramola"
             WebElement btnAbrir = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[contains(text(),'Abrir Gramola')]")
             ));
             btnAbrir.click();
-            
-            // Damos un pequeño respiro para que Angular renderice el buscador
-            try { Thread.sleep(1000); } catch (InterruptedException e) {}
-            
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("input[placeholder*='Escribe']")
+            ));    
         } catch (Exception e) {
-            System.err.println("No se encontró el botón 'Abrir Gramola'");
         }
-        // 3. AHORA SÍ, BUSCAR CANCIÓN (El buscador ya debería ser visible)
+
+        // 3. BUSCAR CANCIÓN (Ahora es seguro buscar porque ya hemos esperado al input)
         buscarCancion("Rock"); 
 
-        // 4. COMPRAR LA PRIMERA CANCIÓN
+        // 4. COMPRAR
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("table")));
+        
         WebElement btnComprar = wait.until(ExpectedConditions.elementToBeClickable(
             By.xpath("//button[contains(text(),'Comprar')]")
         ));
         btnComprar.click();
 
-        // 5. ESPERAR PANTALLA DE PAGO
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(),'Confirmar Pago')]")));
+        // 5. ESPERAR MODAL DE PAGO
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//h3[contains(text(),'Confirmar Pago')]")
+        ));
     }
 
     private void gestionarPermisosSpotifySiAparecen() { //metodo para gestionar los permisos de spotify si aparecen
