@@ -137,9 +137,8 @@ public void testCompraCancionFallida() {
     assertTrue(errorMsg.isDisplayed());//validamos que el mensaje se vea 
 }
 
-    private void realizarFlujoLoginYBusqueda() { //metodos de apoyo para ambos test
-        // LOGIN
-        System.out.println("Entrando en Gramola.");
+    private void realizarFlujoLoginYBusqueda() { // metodos de apoyo para ambos test
+        // 1. LOGIN
         driver.get("http://127.0.0.1:4200/login");
         
         WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email")));
@@ -147,23 +146,35 @@ public void testCompraCancionFallida() {
         driver.findElement(By.id("password")).sendKeys(PASSWORD);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        gestionarPermisosSpotifySiAparecen(); //sirve para gestionar los permisos de spotify si aparecen
+        gestionarPermisosSpotifySiAparecen(); // gestiona permisos si salen
 
+        // 2. ESPERAR A ENTRAR EN MUSIC
         wait.until(ExpectedConditions.urlContains("/music"));
-        System.out.println("✅ Estamos en /music.");
-
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
 
-        buscarCancion("Rock");//busca la cancion rock
+        try {
+            WebElement btnAbrir = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[contains(text(),'Abrir Gramola')]")
+            ));
+            btnAbrir.click();
+            
+            // Damos un pequeño respiro para que Angular renderice el buscador
+            try { Thread.sleep(1000); } catch (InterruptedException e) {}
+            
+        } catch (Exception e) {
+            System.err.println("No se encontró el botón 'Abrir Gramola'");
+        }
+        // 3. AHORA SÍ, BUSCAR CANCIÓN (El buscador ya debería ser visible)
+        buscarCancion("Rock"); 
 
-        // se abre la tabla de resultados y se compra la primera cancion
+        // 4. COMPRAR LA PRIMERA CANCIÓN
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("table")));
         WebElement btnComprar = wait.until(ExpectedConditions.elementToBeClickable(
             By.xpath("//button[contains(text(),'Comprar')]")
         ));
         btnComprar.click();
 
-        // se espera a que aparezca la pantalla de pago
+        // 5. ESPERAR PANTALLA DE PAGO
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(),'Confirmar Pago')]")));
     }
 
