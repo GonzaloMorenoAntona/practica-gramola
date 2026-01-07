@@ -3,15 +3,16 @@
   <div class="header-content">
     <h2 class="main-title">La Gramola</h2>
     
-    <div class="mode-toggle">
-      <span [class.active-text]="!isAdmin">Cliente</span>
-      <label class="switch">
-        <input type="checkbox" (change)="toggleMode()" [checked]="isAdmin">
-        <span class="slider round"></span>
-      </label>
-      <span [class.active-text]="isAdmin">Dueño</span>
-    </div>
+    <button *ngIf="isAdmin" 
+            (click)="toggleMode()" 
+            class="btn-mini">
+      Abrir Gramola
+    </button>
   </div>
+
+  <div class="dashboard-layout">
+     </div>
+
 
   <div class="dashboard-layout">
     

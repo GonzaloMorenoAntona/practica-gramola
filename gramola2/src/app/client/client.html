@@ -1,6 +1,24 @@
-<div class="card" style="border-left: 5px solid #0a192f;"> <div class="card-header">
-    <strong class="card-title">Buscar Canción</strong>
-  </div>
+<div class="card" *ngIf="isFullWidth" style="border-left: 5px solid #0a192f;"> 
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+    
+    <strong class="card-title" style="margin: 0;">Buscar Canción</strong>
+    
+    <button (click)="goToLogin()" 
+            style="
+                background-color: #d32f2f; 
+                color: white; 
+                border: none; 
+                border-radius: 4px; 
+                padding: 5px 10px; 
+                font-size: 11px; 
+                font-weight: bold; 
+                cursor: pointer; 
+                line-height: 1; 
+                min-width: auto; 
+                width: auto;">
+           Volver al Panel de Control
+        </button>
+    </div>
   
   <div class="list" style="padding: 15px; display: flex; gap: 10px;">
     <input type="text" 

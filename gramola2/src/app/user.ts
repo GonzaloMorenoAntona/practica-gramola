@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
+  
   private apiUrlRegister = 'http://localhost:8080/users/register';
   private apiUrlLogin = 'http://localhost:8080/users/login';
 
@@ -22,6 +23,9 @@ export class UserService {
     return this.http.post<any>(this.apiUrlLogin, body, {
       withCredentials: true // Si usas sesiones HTTP
     });
+  }
+  logout() {
+    sessionStorage.clear();
   }
 }
 

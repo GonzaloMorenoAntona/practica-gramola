@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpotifyService } from '../spotify';
 import { PaymentService } from '../payment-service';
+import { Router } from '@angular/router'; // IMPORTANTE
+import { UserService } from '../user';
 
 declare var Stripe: any;
 
@@ -36,11 +38,13 @@ export class ClientComponent implements OnInit, OnDestroy {
   isProcessing: boolean = false;
   paymentError: string = '';
   songPrice: number = 0;
+
+  
   
   // Tu clave pública de Stripe
   stripePublicKey = 'pk_test_51SIV0yRm0ClsCnoVWXB3iOiEfdtda0z61OvJDYLWIIAq5FQZuIdFOAb4sEwtk8w2eEooAbJXOSKxsuGw3j56g5G900aYokx6Qx';
 
-  constructor(private spoti: SpotifyService, private paymentService: PaymentService) {}
+  constructor(private spoti: SpotifyService, private paymentService: PaymentService, private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
     // 1. Inicializar Stripe
@@ -170,5 +174,13 @@ export class ClientComponent implements OnInit, OnDestroy {
       },
       error: (e) => console.error("Error añadiendo a cola de Spotify", e)
     });
+  }
+  goToLogin() {
+    // 1. Cerramos sesión (opcional, pero recomendable por seguridad)
+    // Esto hará que aparezcan "Login" y "Registrar" en la barra de arriba
+    this.userService.logout(); 
+
+    // 2. Navegamos a la pantalla de login
+    this.router.navigate(['/login']);
   }
 }
