@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable,signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 export class UserService {
   private apiUrlRegister = 'http://localhost:8080/users/register';
   private apiUrlLogin = 'http://localhost:8080/users/login';
+
+  showNavbar = signal<boolean>(true);
 
   constructor(private http: HttpClient) {}
 

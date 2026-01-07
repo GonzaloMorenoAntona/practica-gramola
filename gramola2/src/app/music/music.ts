@@ -1,9 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// IMPORTAMOS TUS NUEVOS COMPONENTES
 import { DevicesComponent } from '../devices/devices';
 import { PlaylistsComponent } from '../playlists/playlists';
-import { ClientComponent } from '../client/client'; // <--- El que acabas de crear
+import { ClientComponent } from '../client/client'; 
+import { UserService } from '../user';
 
 @Component({
   selector: 'app-music',
@@ -13,15 +13,18 @@ import { ClientComponent } from '../client/client'; // <--- El que acabas de cre
   templateUrl: './music.html',
   styleUrls: ['./music.css']
 })
-export class MusicComponent {
+export class MusicComponent implements OnDestroy {
+
+  constructor(private userService: UserService) {}
   
-  isAdmin: boolean = false;
+  isAdmin: boolean = true;
 
   // Accedemos al hijo (ClientComponent) para poder decirle "¡Actualízate!"
   @ViewChild(ClientComponent) clientComponent!: ClientComponent;
 
   toggleMode() {
     this.isAdmin = !this.isAdmin;
+    this.userService.showNavbar.set(this.isAdmin);
   }
 
   // Esta función se ejecuta cuando PlaylistsComponent nos avisa de que ha puesto música
@@ -35,5 +38,9 @@ export class MusicComponent {
         this.clientComponent.getRealQueue();
       }, 1500);
     }
+  }
+  //Si salimos de esta página, asegurar que la barra vuelve a aparecer
+  ngOnDestroy() {
+    this.userService.showNavbar.set(true);
   }
 }

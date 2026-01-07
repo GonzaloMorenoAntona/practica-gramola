@@ -4,7 +4,7 @@
   <app-payment></app-payment>
 </div> -->
 
-<nav class="main-navbar">
+<nav class="main-navbar" *ngIf="userService.showNavbar()">
   <div class="nav-brand">Gramola</div>
   <div class="nav-links">
     <a routerLink="/login" routerLinkActive="active">Login</a>
