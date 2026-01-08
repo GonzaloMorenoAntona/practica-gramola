@@ -1,49 +1,49 @@
-<div class="centered-container">
-  <div class="auth-card" style="max-width: 500px; width: 100%;">
+<div [class.centered-container]="mode === 'subscription'">
+  <div class="auth-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
     
     <div *ngIf="!transactionDetails">
-      <h2 style="color: #e6f1ff; margin-bottom: 10px;">Suscripción Premium</h2>
-      <p style="color: #8892b0; margin-bottom: 30px;">Elige el plan que mejor se adapte a tu bar.</p>
+        <h2 style="color: #e6f1ff; margin-bottom: 10px;">
+            {{ mode === 'subscription' ? 'Suscripción Premium' : 'Cargando pago...' }}
+        </h2>
+    </div>
+
+    <div *ngIf="mode === 'subscription' && !transactionDetails">
+      <p style="color: #8892b0; margin-bottom: 30px;">Elige tu plan.</p>
       
       <div class="plans-container">
-        <div *ngFor="let plan of plans" 
-             class="plan-card" 
+        <div *ngFor="let plan of plans" class="plan-card" 
              [class.selected]="selectedPlanId === plan.id"
              (click)="selectedPlanId = plan.id">
-          
-          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-              <div class="radio-circle">
-                <div class="radio-inner" *ngIf="selectedPlanId === plan.id"></div>
-              </div>
-              <span class="plan-name">{{ plan.name }}</span>
-            </div>
-            <span class="plan-price">{{ plan.value }} €</span>
-          </div>
-
-          <input type="radio" name="plan" [(ngModel)]="selectedPlanId" [value]="plan.id" style="display: none;">
+           <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+             <span class="plan-name">{{ plan.name }}</span>
+             <span class="plan-price">{{ plan.value }} €</span>
+           </div>
+           <input type="radio" [value]="plan.id" [(ngModel)]="selectedPlanId" style="display:none">
         </div>
       </div>
 
-      <button (click)="prepay()" [disabled]="!selectedPlanId" class="btn-action">
-        IR AL PAGO
-      </button>
+      <button (click)="prepay()" [disabled]="!selectedPlanId" class="btn-action">IR AL PAGO</button>
     </div>
 
     <form id="payment-form" style="display:none; margin-top: 10px;">
-      <h3 style="color: #e6f1ff; margin-bottom: 20px; border-bottom: 1px solid #233554; padding-bottom: 10px;">
-        Datos de Pago
-      </h3>
       
+      <h3 style="color: #e6f1ff; margin-bottom: 20px; border-bottom: 1px solid #233554; padding-bottom: 10px;">
+        {{ mode === 'subscription' ? 'Datos de Pago' : 'Pagar Canción: ' + songPrice + ' €' }}
+      </h3>
+
       <div style="background-color: #f0f2f5; padding: 15px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #ccc;">
         <div id="card-element"></div>
       </div>
       
-      <button id="submit" class="btn-action">
-        <div class="spinner hidden" id="spinner"></div>
-        <span id="button-text">PAGAR AHORA</span>
+      <button id="submit-btn" class="btn-action">
+        PAGAR AHORA
       </button>
       
+      <button *ngIf="mode === 'song'" type="button" (click)="close.emit()" 
+              style="margin-top:10px; background: transparent; border: 1px solid #ff6b6b; color: #ff6b6b; width: 100%; padding: 10px; border-radius: 4px; cursor: pointer;">
+        CANCELAR
+      </button>
+
       <p id="card-error" role="alert" style="color: #ff6b6b; margin-top: 15px; font-size: 0.9em;"></p>
     </form>
 

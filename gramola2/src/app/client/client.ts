@@ -3,21 +3,23 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpotifyService } from '../spotify';
 import { PaymentService } from '../payment-service';
-import { Router } from '@angular/router'; // IMPORTANTE
+import { Router } from '@angular/router';
 import { UserService } from '../user';
 
-declare var Stripe: any;
+// IMPORTANTE: Importamos tu componente de pagos existente
+import { PaymentComponent } from '../payments/payments';
 
 @Component({
-  selector: 'app-client', // Nombre del selector para usarlo luego como <app-client></app-client>
+  selector: 'app-client',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  // AÑADIMOS PaymentComponent AQUÍ
+  imports: [CommonModule, FormsModule, PaymentComponent],
   templateUrl: './client.html',
   styleUrls: ['./client.css']
 })
 export class ClientComponent implements OnInit, OnDestroy {
   
-  @Input() isFullWidth: boolean = false; // Para saber si ocupamos todo el ancho (modo cliente) o no (modo dueño)
+  @Input() isFullWidth: boolean = false;
 
   // Variables de Cola y Reproducción
   queue: any[] = [];
@@ -29,46 +31,35 @@ export class ClientComponent implements OnInit, OnDestroy {
   searchResults: any[] = [];
   searchError?: string;
 
-  // Variables de Pagos (Stripe)
-  stripe: any;
-  elements: any;
-  card: any;
+  // Variables para el Modal (YA NO HAY VARIABLES DE STRIPE AQUÍ)
   showPaymentModal: boolean = false;
   selectedTrack: any = null;
-  isProcessing: boolean = false;
-  paymentError: string = '';
   songPrice: number = 0;
 
-  
-  
-  // Tu clave pública de Stripe
-  stripePublicKey = 'pk_test_51SIV0yRm0ClsCnoVWXB3iOiEfdtda0z61OvJDYLWIIAq5FQZuIdFOAb4sEwtk8w2eEooAbJXOSKxsuGw3j56g5G900aYokx6Qx';
-
-  constructor(private spoti: SpotifyService, private paymentService: PaymentService, private router: Router, private userService: UserService) {}
+  constructor(
+    private spoti: SpotifyService, 
+    private paymentService: PaymentService, 
+    private router: Router, 
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    // 1. Inicializar Stripe
-    if (typeof Stripe !== 'undefined') {
-      this.stripe = Stripe(this.stripePublicKey);
-    }
-
-    // 2. Cargar la cola inicial y activar el "Polling" (actualizar cada 5s)
+    // 1. Cargar la cola inicial y activar el "Polling" (actualizar cada 5s)
     this.getRealQueue();
     this.refreshInterval = setInterval(() => {
       this.getRealQueue();
     }, 5000);
 
+    // 2. Obtener el precio de la canción
     this.paymentService.getSongPrice().subscribe({
       next: (data: any) => {
-        this.songPrice = data.value; // Guardamos el valor (ej: 1.00)
-        console.log("Precio actual de la canción:", this.songPrice);
+        this.songPrice = data.value;
       },
       error: (e) => console.error("Error al obtener precio", e)
     });
   }
 
   ngOnDestroy(): void {
-    // Apagar el reloj si salimos del componente
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
@@ -78,7 +69,6 @@ export class ClientComponent implements OnInit, OnDestroy {
   getRealQueue() {
     this.spoti.getUserQueue().subscribe({
       next: (data: any) => {
-        // Spotify nos da lo que suena YA y lo que viene DESPUÉS
         this.currentTrack = data.currently_playing;
         this.queue = data.queue;
       },
@@ -105,67 +95,30 @@ export class ClientComponent implements OnInit, OnDestroy {
     this.searchError = undefined;
   }
 
-  // --- LÓGICA DE PAGOS ---
+  // --- LÓGICA DE PAGOS (Ahora mucho más simple) ---
+  
   openPaymentModal(track: any) {
     this.selectedTrack = track;
+    // Solo mostramos el modal. La lógica de Stripe ahora la hace el componente hijo.
     this.showPaymentModal = true;
-    this.paymentError = '';
-
-    // Esperamos un pelín para que el HTML del modal exista antes de montar Stripe
-    setTimeout(() => {
-      if (!this.elements) {
-        this.elements = this.stripe.elements();
-        this.card = this.elements.create('card');
-      }
-      this.card.mount('#card-element');
-    }, 100);
   }
 
-  cancelPayment() {
-    this.showPaymentModal = false;
-  }
-
-  async confirmPayment() {
-    this.isProcessing = true;
-    this.paymentError = '';
-
-    // 1. Pedir 'ClientSecret' a tu Backend Java
-    this.spoti.prepareSongPayment(this.selectedTrack.name).subscribe({
-      next: async (res: any) => {
-        
-        // 2. Confirmar pago con Stripe en el Front
-        const result = await this.stripe.confirmCardPayment(res.clientSecret, {
-          payment_method: { card: this.card }
-        });
-
-        if (result.error) {
-          this.paymentError = result.error.message;
-          this.isProcessing = false;
-        } else {
-          if (result.paymentIntent.status === 'succeeded') {
-            // 3. ¡Pago Éxitoso! -> Añadir a Spotify y BD
-            this.addSongToQueue(this.selectedTrack);
-            
-            let barName = sessionStorage.getItem('barName') || 'Bar Desconocido';
-            this.spoti.saveSongInDb(this.selectedTrack, barName).subscribe();
-
-            this.cancelPayment();
-            this.isProcessing = false;
-          }
-        }
-      },
-      error: () => {
-        this.paymentError = 'Error de conexión con el servidor.';
-        this.isProcessing = false;
-      }
-    });
+  // Este método se ejecuta cuando el componente PaymentComponent nos avisa del éxito
+  onSongPaid(track: any) {
+    this.showPaymentModal = false; // Cerramos modal
+    
+    // Añadimos a la cola y guardamos en BD
+    this.addSongToQueue(track);
+    
+    let barName = sessionStorage.getItem('barName') || 'Bar Desconocido';
+    this.spoti.saveSongInDb(track, barName).subscribe();
   }
 
   addSongToQueue(track: any) {
     this.spoti.addToQueue(track.uri).subscribe({
       next: () => {
         console.log(`✅ "${track.name}" añadida.`);
-        this.clearSearch(); // Limpiamos el buscador para ver la cola
+        this.clearSearch();
         
         // Esperamos 1.5s y actualizamos la cola visualmente
         setTimeout(() => {
@@ -175,12 +128,9 @@ export class ClientComponent implements OnInit, OnDestroy {
       error: (e) => console.error("Error añadiendo a cola de Spotify", e)
     });
   }
-  goToLogin() {
-    // 1. Cerramos sesión (opcional, pero recomendable por seguridad)
-    // Esto hará que aparezcan "Login" y "Registrar" en la barra de arriba
-    this.userService.logout(); 
 
-    // 2. Navegamos a la pantalla de login
+  goToLogin() {
+    this.userService.logout(); 
     this.router.navigate(['/login']);
   }
 }

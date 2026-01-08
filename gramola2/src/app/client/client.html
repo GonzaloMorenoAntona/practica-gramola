@@ -16,16 +16,16 @@
                 line-height: 1; 
                 min-width: auto; 
                 width: auto;">
-           Volver al Panel de Control
+            Volver al Panel de Control
         </button>
     </div>
   
   <div class="list" style="padding: 15px; display: flex; gap: 10px;">
     <input type="text" 
-           [(ngModel)]="searchQuery" 
-           (keyup.enter)="search()" 
-           placeholder="Escribe título o artista..." 
-           style="flex-grow: 1; padding: 10px; background-color: #f0f2f5; border: 1px solid #ccc; color: #333; border-radius: 4px;">
+            [(ngModel)]="searchQuery" 
+            (keyup.enter)="search()" 
+            placeholder="Escribe título o artista..." 
+            style="flex-grow: 1; padding: 10px; background-color: #f0f2f5; border: 1px solid #ccc; color: #333; border-radius: 4px;">
     
     <button class="link-btn" (click)="search()" style="background-color: #0a192f; color: white;">Buscar</button>
   </div>
@@ -61,7 +61,8 @@
   <div *ngIf="searchError" style="padding: 15px; color: #d32f2f;">{{ searchError }}</div>
 </div>
 
-<div class="card" *ngIf="currentTrack" style="border-left: 5px solid #0a192f;"> <div class="card-header">
+<div class="card" *ngIf="currentTrack" style="border-left: 5px solid #0a192f;"> 
+  <div class="card-header">
     <strong class="card-title">Sonando Ahora</strong>
   </div>
   <div class="list" style="padding: 20px; display: flex; align-items: center; gap: 20px;">
@@ -106,28 +107,19 @@
   </div>
 </div>
 
-<div *ngIf="showPaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; justify-content: center; align-items: center;">
-  
-  <div style="background: white; color: #333; padding: 25px; border-radius: 8px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+<div *ngIf="showPaymentModal" 
+     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); z-index: 2000; 
+            display: flex; justify-content: center; align-items: center;">
     
-    <h3 style="margin-top: 0; color: #0a192f;">Confirmar Pago</h3>
-    
-    <div style="margin: 20px 0;">
-      <p style="margin-bottom: 5px;">Canción: <strong>{{ selectedTrack?.name }}</strong></p>
-      <p>Importe: <strong style="color: #0a192f;">{{ songPrice }} €</strong></p> 
+    <div style="width: 100%; max-width: 500px; padding: 10px;">
+        <app-payment 
+            [mode]="'song'"
+            [songTrack]="selectedTrack"
+            [songPrice]="songPrice"
+            (songPaid)="onSongPaid($event)" 
+            (close)="showPaymentModal = false">
+        </app-payment>
     </div>
 
-    <div style="padding: 10px; border: 1px solid #ddd; background: #f9f9f9; margin-bottom: 20px;">
-      <div id="card-element"></div>
-    </div>
-
-    <div *ngIf="paymentError" style="color: red; margin-bottom: 15px;">{{ paymentError }}</div>
-
-    <div style="display: flex; justify-content: flex-end; gap: 10px;">
-      <button (click)="cancelPayment()" class="link-btn" style="background: #eee; color: #555;">Cancelar</button>
-      <button (click)="confirmPayment()" class="link-btn" [disabled]="isProcessing" style="background: #0a192f; color: white;">
-        {{ isProcessing ? 'Procesando...' : 'Pagar Ahora' }}
-      </button>
-    </div>
-  </div>
 </div>
