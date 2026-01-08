@@ -16,6 +16,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions; // <--- ESTE IMPORT ES VITAL
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +49,12 @@ public class GramolaSeleniumTest {
     private final String REAL_CLIENT_ID = "71ac06b8a29a4de696a60e7b1569f2b0"; 
     private final String REAL_CLIENT_SECRET = "d880ef54bf0746d2b1870f0056a4a2cd";
 
-    // Si deja de funcionar,  hay que actualizar este valor desde el navegador, cookie (sp_dc)
+    // Si deja de funcionar, hay que actualizar este valor desde el navegador, cookie (sp_dc)
     private final String SPOTIFY_COOKIE_VALUE = "AQBSb0PwE-oMa-68X47tmMYZ96otXznzdhgt5pSWydFwV5BCby6YMJS5hxvPQx6D0o0kv7-_YapSTeFbeT6RQIBZC5Vr6-cJJrOYGpKHdPgdETdpwsv1Avi_NAv6YOKAkf9XBi2kR8IYBWAlRhZ8UFIK7YJbWBBxFU8zzoTerS07u4nKrp5qvnaHXvQO-oRV3r12O70qcMFAQAiy2w";
 
     @BeforeEach
     public void setUp() {
-        if(userDao.existsById(USUARIO)) { //si existe ya un usuario con es ecorreo, lo eliminamos y creamos uno nuevo en la base de datos
+        if(userDao.existsById(USUARIO)) {
             userDao.deleteById(USUARIO);
         }
 
@@ -86,7 +87,6 @@ public class GramolaSeleniumTest {
 
     @AfterEach
     public void tearDown() {
-        // se cierra el navegador al acabar cada test
         if (driver != null) {
             driver.quit();
         }
@@ -97,48 +97,46 @@ public class GramolaSeleniumTest {
     void testCompraCancionCorrecta() {
         System.out.println("primer test, compra correcta");
         
-        realizarFlujoLoginYBusqueda(); //para loguearse y buscar la cancion
+        realizarFlujoLoginYBusqueda(); 
 
         rellenarStripe("4242424242424242", "1228", "123", "13071");
 
-        WebElement btnPagar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Pagar Ahora')]")));
+        // Usamos el ID exacto que tienes en payments.html: id="submit-btn"
+        WebElement btnPagar = wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-btn")));
         btnPagar.click();
         
         wait.until(ExpectedConditions.invisibilityOf(btnPagar));
         
-        // para asegurarnos de que el pago se ha realizado, buscamos en la base de datos
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
         List<StripeTransaction> pagos = transactionDao.findAll();
         assertTrue(pagos.size() > 0, "Fallo: No se guardó el pago.");
         System.out.println("TEST 1, el pago ha sido realizado.");
     }
 
-    @Test
-@Order(2)
-public void testCompraCancionFallida() {
-    System.out.println("test 2, compra fallida");
+   @Test
+    @Order(2)
+    public void testCompraCancionFallida() {
+        System.out.println("test 2, compra fallida");
 
-    realizarFlujoLoginYBusqueda(); 
+        realizarFlujoLoginYBusqueda(); 
 
-    // se rellenan datos inválidos
-    rellenarStripe("4000 0000 0000 0000", "1228", "123", "13071");
+        // Rellenamos con datos inválidos
+        rellenarStripe("4000 0000 0000 0000", "1228", "123", "13071");
 
-    WebElement btnPagar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Pagar Ahora')]")));
-    btnPagar.click();
+        WebElement btnPagar = wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-btn")));
+        btnPagar.click();
+        
 
-    // buscamos por el TEXTO visible.
-    WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(
-        By.xpath("//*[contains(text(), 'no es válido')]")
-    ));
-    
-    // Si pasa de la línea anterior, es que ha encontrado el mensaje.
-    System.out.println("Error encontrado: " + errorMsg.getText()); //por lo tanto el test habria funcionado
-    
-    assertTrue(errorMsg.isDisplayed());//validamos que el mensaje se vea 
-}
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("card-error"), "válido"));
+        
+        WebElement errorMsg = driver.findElement(By.id("card-error"));
+        
+        System.out.println("Error encontrado: " + errorMsg.getText()); 
+        
+        assertTrue(errorMsg.isDisplayed());
+    }
 
     private void realizarFlujoLoginYBusqueda() {
-        // 1. LOGIN
         System.out.println("Entrando en Gramola.");
         driver.get("http://127.0.0.1:4200/login");
         
@@ -148,10 +146,8 @@ public void testCompraCancionFallida() {
 
         gestionarPermisosSpotifySiAparecen(); 
 
-        // 2. ESPERAR A ENTRAR (Verificar que estamos en Music)
         wait.until(ExpectedConditions.urlContains("/music"));
         try {
-            // Buscamos el botón verde "Abrir Gramola"
             WebElement btnAbrir = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[contains(text(),'Abrir Gramola')]")
             ));
@@ -160,13 +156,10 @@ public void testCompraCancionFallida() {
             wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector("input[placeholder*='Escribe']")
             ));    
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
-        // 3. BUSCAR CANCIÓN (Ahora es seguro buscar porque ya hemos esperado al input)
         buscarCancion("Rock"); 
 
-        // 4. COMPRAR
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("table")));
         
         WebElement btnComprar = wait.until(ExpectedConditions.elementToBeClickable(
@@ -174,13 +167,13 @@ public void testCompraCancionFallida() {
         ));
         btnComprar.click();
 
-        // 5. ESPERAR MODAL DE PAGO
+        // Esperamos a que aparezca el título H3 dentro del form (lo que indica que payments.ts ha hecho showForm)
         wait.until(ExpectedConditions.visibilityOfElementLocated(
-            By.xpath("//h3[contains(text(),'Confirmar Pago')]")
+            By.xpath("//h3[contains(text(),'Pagar Canción')]")
         ));
     }
 
-    private void gestionarPermisosSpotifySiAparecen() { //metodo para gestionar los permisos de spotify si aparecen
+    private void gestionarPermisosSpotifySiAparecen() { 
         try { Thread.sleep(1500); } catch (InterruptedException e) {} 
         if (driver.getCurrentUrl().contains("spotify")) {
             try {
@@ -205,31 +198,40 @@ public void testCompraCancionFallida() {
         try { Thread.sleep(1500); } catch (InterruptedException e) {}
     }
 
+    // --- MÉTODO CORREGIDO PARA ESCRIBIR EN STRIPE ---
     private void rellenarStripe(String tarjeta, String fecha, String cvc, String cp) {
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.cssSelector("iframe[name^='__privateStripeFrame']")));
+        // 1. Esperar al iframe
+        WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("iframe[name^='__privateStripeFrame']")));
         
-        WebElement card = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("cardnumber")));
-        card.click();
-        card.clear();
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        // 2. Entrar al iframe
+        driver.switchTo().frame(iframe);
         
-        for(char c : tarjeta.toCharArray()) {
-            card.sendKeys(String.valueOf(c));
-            try { Thread.sleep(50); } catch (InterruptedException e) {}
-        }
-        
-        WebElement dateInput = driver.findElement(By.name("exp-date"));
-        for(char c : fecha.toCharArray()) {
-            dateInput.sendKeys(String.valueOf(c));
-            try { Thread.sleep(50); } catch (InterruptedException e) {}
-        }
+        // Inicializar Actions
+        Actions actions = new Actions(driver);
 
-        driver.findElement(By.name("cvc")).sendKeys(cvc);
+        // --- TARJETA ---
+        WebElement cardInput = wait.until(ExpectedConditions.elementToBeClickable(By.name("cardnumber")));
+        // CLAVE: Click + SendKeys en la misma acción para forzar el foco
+        actions.moveToElement(cardInput).click().sendKeys(tarjeta).perform();
+        try { Thread.sleep(200); } catch (InterruptedException e) {}
+
+        // --- FECHA ---
+        WebElement dateInput = driver.findElement(By.name("exp-date"));
+        actions.moveToElement(dateInput).click().sendKeys(fecha).perform();
+        try { Thread.sleep(200); } catch (InterruptedException e) {}
+
+        // --- CVC ---
+        WebElement cvcInput = driver.findElement(By.name("cvc"));
+        actions.moveToElement(cvcInput).click().sendKeys(cvc).perform();
+        try { Thread.sleep(200); } catch (InterruptedException e) {}
+
+        // --- CP (Opcional) ---
         
-        try {
-            driver.findElement(By.name("postal")).sendKeys(cp);
-        } catch (Exception e) {}
+         WebElement postalInput = driver.findElement(By.name("postal"));
+        actions.moveToElement(postalInput).click().sendKeys(cp).perform();
         
+        
+        // 3. Salir del iframe
         driver.switchTo().defaultContent();
     }
 }

@@ -129,11 +129,16 @@ export class PaymentComponent implements OnInit {
       payment_method: { card: card }
     }).then(function (response: any) {
       if (response.error) {
-        alert(response.error.message);
+        // Escribimos el error en el párrafo <p id="card-error"> que tienes en el HTML
+        const errorElement = document.getElementById('card-error');
+        if (errorElement) {
+            errorElement.textContent = response.error.message;
+            errorElement.style.display = 'block'; // Aseguramos que se vea
+        }
+
       } else {
         if (response.paymentIntent.status === 'succeeded') {
             
-            // --- AQUÍ DECIDIMOS QUÉ HACER SEGÚN EL MODO ---
             if (self.mode === 'subscription') {
                 self.PaymentService.confirm(self.transactionDetails.id, self.token!).subscribe({
                     next: () => self.router.navigate(["/login"]),
