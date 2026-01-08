@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet, Router } from '@angular/router';
 import { RegisterComponent } from './register/register';
 import { Login } from "./login/login";
 import { PaymentComponent } from "./payments/payments";
@@ -14,6 +14,11 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.css'
 })
 export class App {
-  constructor(public userService: UserService) {}
+  constructor(public userService: UserService, private router: Router) {}
   protected readonly title = signal('gramola2');
+  logout() {
+    this.userService.logout(); // Borra sesión
+    this.router.navigate(['/login']); // Te manda fuera
+  }
 }
+

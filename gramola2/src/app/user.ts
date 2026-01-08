@@ -11,6 +11,7 @@ export class UserService {
   private apiUrlLogin = 'http://localhost:8080/users/login';
 
   showNavbar = signal<boolean>(true);
+  isLoggedIn = signal<boolean>(!!sessionStorage.getItem('clientId'));
 
   constructor(private http: HttpClient) {}
 
@@ -26,6 +27,7 @@ export class UserService {
   }
   logout() {
     sessionStorage.clear();
+    this.isLoggedIn.set(false);
   }
 }
 

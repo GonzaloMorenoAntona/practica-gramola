@@ -55,6 +55,7 @@ export class Login {
           sessionStorage.setItem("clientId", clientId);
           sessionStorage.setItem('barName', response.bar);
 
+          this.userService.isLoggedIn.set(true); // Actualiza el estado de login  
           // 3. ✅ LLAMAR AL SERVICIO DE SPOTIFY PARA INICIAR EL FLUJO DE AUTENTICACIÓN
           // Esto construirá la URL y redirigirá el navegador a Spotify
           this.spotifyService.getToken(); // <-- Llamada al servicio
