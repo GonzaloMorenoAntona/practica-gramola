@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.gramola.model.Price;
 import edu.uclm.esi.gramola.model.StripeTransaction;
+import edu.uclm.esi.gramola.model.User;
 import edu.uclm.esi.gramola.services.PaymentService;
 import jakarta.servlet.http.HttpSession;
 
@@ -34,11 +35,15 @@ public class PaymentsController {
     }
 
     @PostMapping("/prepay")
-    public StripeTransaction prepay(HttpSession session, @RequestBody Map<String, Long> body) {
+    public StripeTransaction prepay(HttpSession session, @RequestBody Map<String, Object> body) {
         try {
-            Long priceId = body.get("priceId");
+            Long priceId = Long.valueOf(body.get("priceId").toString());
+            String token = (String) body.get("token");
+
+            User user = this.service.findByCreationToken(token);
+            String email = user.getEmail();
             
-            StripeTransaction transactionDetails = this.service.iniciarTransaccionSuscripcion(priceId);
+            StripeTransaction transactionDetails = this.service.iniciarTransaccionSuscripcion(priceId, email);
             
             session.setAttribute("transactionDetails", transactionDetails);
             return transactionDetails;
@@ -75,8 +80,9 @@ public class PaymentsController {
     public Map<String, String> prepaySong(@RequestBody Map<String, Object> body) {
         try {
             String songName = (String) body.get("songName");
+            String email = (String) body.get("email");
             
-            String clientSecret = this.service.prepararPagoCancion(songName);
+            String clientSecret = this.service.prepararPagoCancion(songName, email);
 
             Map<String, String> response = new HashMap<>();
             response.put("clientSecret", clientSecret);

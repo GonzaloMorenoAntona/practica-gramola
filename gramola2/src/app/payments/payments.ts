@@ -51,7 +51,8 @@ export class PaymentComponent implements OnInit {
   // --- NUEVO MÉTODO: PREPARAR PAGO DE CANCIÓN ---
   initSongPayment() {
     // 1. Pedimos el ClientSecret al backend
-    this.spoti.prepareSongPayment(this.songTrack.name).subscribe({
+    let emailBar = sessionStorage.getItem('barEmail') || '';
+    this.spoti.prepareSongPayment(this.songTrack.name, emailBar).subscribe({
         next: (res: any) => {
             // 2. Simulamos la estructura que usabas en 'prepay' para reutilizar tu código
             // Tu 'prepay' devolvía un body que parseabas. Aquí construimos el objeto directo.
@@ -67,11 +68,9 @@ export class PaymentComponent implements OnInit {
     });
   }
 
-  // --- TUS MÉTODOS ORIGINALES (MANTENIDOS) ---
-
   prepay() {
     if (!this.selectedPlanId) return alert("Selecciona una suscripción");
-    this.PaymentService.prepay(this.selectedPlanId).subscribe({
+    this.PaymentService.prepay(this.selectedPlanId, this.token!).subscribe({
       next: (response: any) => {
         this.transactionDetails = JSON.parse(response.body); 
         this.showForm(); // Tu método original

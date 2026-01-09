@@ -58,19 +58,19 @@ public class PaymentService {
     }
 
     // Lógica para /prepay (Suscripciones)
-    public StripeTransaction iniciarTransaccionSuscripcion(Long priceId) throws Exception {
+    public StripeTransaction iniciarTransaccionSuscripcion(Long priceId, String email) throws Exception {
         Price p = this.priceDao.findById(priceId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plan de suscripción no encontrado"));
         
-        return this.prepay(p.getValue());
+        return this.prepay(p.getValue(), email);
     }
 
     // Lógica para /prepay-song (Canciones)
-    public String prepararPagoCancion(String songName) throws Exception {
+    public String prepararPagoCancion(String songName, String email) throws Exception {
         Price songPrice = this.getSongPrice();
         long amountInCents = (long) (songPrice.getValue() * 100);
         
-        return this.prepareSongPaymentInternal(songName, amountInCents);
+        return this.prepareSongPaymentInternal(songName, amountInCents, email);
     }
 
     // Lógica para /confirm (Confirmar registro)
@@ -103,7 +103,7 @@ public class PaymentService {
     
     // --- MÉTODOS INTERNOS (Lógica de Stripe) ---
 
-    public StripeTransaction prepay(double amount) throws StripeException {
+    public StripeTransaction prepay(double amount, String email) throws StripeException {
         long amountInCents = (long) (amount * 100); 
 
         PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
@@ -116,12 +116,14 @@ public class PaymentService {
         
         StripeTransaction st = new StripeTransaction();
         st.setData(transactionDetails);
+        st.setEmail(email);
+        st.setPaymentType("SUBSCRIPTION");
         this.transactionDao.save(st);
         
         return st;
     }
 
-    private String prepareSongPaymentInternal(String songName, long amountInCents) throws StripeException {
+    private String prepareSongPaymentInternal(String songName, long amountInCents, String email) throws StripeException {
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount(amountInCents)
                 .setCurrency("eur")
@@ -136,6 +138,8 @@ public class PaymentService {
         
         StripeTransaction st = new StripeTransaction();
         st.setData(transactionDetails);
+        st.setEmail(email);
+        st.setPaymentType("SONG");
         this.transactionDao.save(st);
         return intent.getClientSecret();
     }

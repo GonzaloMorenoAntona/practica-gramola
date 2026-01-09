@@ -123,8 +123,8 @@ export class SpotifyService {
     const url = `${this.spotiV1Url}/me/player/queue?uri=${uri}`;
     return this.http.post(url, null, { headers, responseType: 'text' as 'json' }); 
   }
-  prepareSongPayment(songName: string): Observable<any> {
-    return this.http.post('http://127.0.0.1:8080/payments/prepay-song', { songName });
+  prepareSongPayment(songName: string, email: string): Observable<any> {
+    return this.http.post('http://127.0.0.1:8080/payments/prepay-song', { songName, email });
   }
   saveSongInDb(track: any, barName: string): Observable<any> {
     const url = 'http://127.0.0.1:8080/songs/add';

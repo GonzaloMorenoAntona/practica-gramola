@@ -15,7 +15,9 @@ public class StripeTransaction {
 
     @Column(columnDefinition = "json")
     private String data;
- private String email;
+
+    private String email;
+    private String paymentType;
 
     public StripeTransaction() {
         this.id = java.util.UUID.randomUUID().toString();
@@ -37,8 +39,17 @@ public class StripeTransaction {
     public String getEmail() {
         return email;
     }
+    public void setEmail(String email) {
+        this.email = email;
+    }
        public void setData(JSONObject jsoData) {
        this.data = jsoData.toString();
+    }
+    public String getPaymentType() {
+        return paymentType;
+    }
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
     }
 }
 

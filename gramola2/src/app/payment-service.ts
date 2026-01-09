@@ -17,9 +17,9 @@ export class PaymentService {
   }
 
   // 2. MODIFICADO: Ahora recibe el ID (selectedPlanId) y usa POST para enviarlo
-  prepay(selectedPlanId: number): Observable<any> {
+  prepay(selectedPlanId: number, token: string): Observable<any> {
     // Creamos el paquetito con el ID para enviarlo al backend
-    const body = { priceId: selectedPlanId };
+    const body = { priceId: selectedPlanId, token: token };
 
     // Cambiamos .get por .post porque estamos enviando datos (el body)
     return this.client.post('http://localhost:8080/payments/prepay', body, {

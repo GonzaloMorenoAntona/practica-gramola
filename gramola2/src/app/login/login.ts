@@ -54,6 +54,8 @@ export class Login {
           // 2. Guardar el clientId en sessionStorage
           sessionStorage.setItem("clientId", clientId);
           sessionStorage.setItem('barName', response.bar);
+          sessionStorage.setItem('barEmail', email);
+
 
           this.userService.isLoggedIn.set(true); // Actualiza el estado de login  
           // 3. ✅ LLAMAR AL SERVICIO DE SPOTIFY PARA INICIAR EL FLUJO DE AUTENTICACIÓN
