@@ -38,7 +38,7 @@
       <b>¡Registro exitoso!</b><br> Revisa tu correo para confirmar la cuenta.
     </div>
     <div *ngIf="registroKO" class="error-msg">
-      Error en el registro. Por favor, inténtalo de nuevo.
+      {{ errorMessage }}
     </div>
   </div>
 </div>

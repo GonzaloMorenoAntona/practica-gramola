@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Importa CommonModule
+import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
 import { UserService } from '../user';
 
@@ -17,39 +17,42 @@ export class RegisterComponent {
   pwd2?: string;
   clientId?: string;
   clientSecret?: string;
+  
   registroOK : boolean = false;
   registroKO : boolean = false;
- 
+  
+  // 1. AÑADIMOS ESTA VARIABLE PARA GUARDAR EL TEXTO DEL ERROR
+  errorMessage: string = "";
 
   constructor(private service : UserService) { }
 
   registrar() {
+    // Reseteamos estados
     this.registroOK = false;
     this.registroKO = false;
+    this.errorMessage = ""; 
     
+    // Validación de contraseñas local
     if (this.pwd1 !== this.pwd2) {
-      console.error('Las contraseñas no coinciden');
       this.registroKO = true;
+      this.errorMessage = "Las contraseñas no coinciden";
       return;
     }
-    const body = {
-      bar: this.bar!,
-      email: this.email!,
-      pwd1: this.pwd1!,
-      pwd2: this.pwd2!,
-      clientId: this.clientId!,
-      clientSecret: this.clientSecret!
-    };
-    console.log('Enviando al backend:', body);
 
-    this.service.register(this.bar!, this.email!, this.pwd1!, this.pwd2!, this.clientId!, this.clientSecret!).subscribe({
+    // Llamada al servicio
+    this.service.register(this.bar!, this.email!, this.pwd1!, this.pwd2!, this.clientId!, this.clientSecret!)
+      .subscribe({
       next: () => {
         this.registroOK = true;
       },
       error: (err) => {
-        console.error('Error recibido del backend:', err); // Esto también puede ayudar
-        console.error(err.error?.message || 'Error en el registro');
         this.registroKO = true;
+        
+        // 2. AQUÍ CAPTURAMOS EL MENSAJE REAL DEL BACKEND
+        // Si Java lanza "Usuario ya registrado", Angular lo recibe en err.error.message o err.error
+        this.errorMessage = err.error?.message || err.error || "Error desconocido en el registro";
+        
+        console.error('Error detallado:', err);
       }
     });
   }

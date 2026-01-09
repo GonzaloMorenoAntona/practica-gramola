@@ -2,6 +2,7 @@ package edu.uclm.esi.gramola;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 import java.time.Duration;
 import java.util.List;
 
@@ -158,7 +159,7 @@ public class GramolaSeleniumTest {
             ));    
         } catch (Exception e) {}
 
-        buscarCancion("Rock"); 
+        buscarCancion("Yellow"); 
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("table")));
         

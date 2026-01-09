@@ -32,7 +32,7 @@ public class UserService {
         if (existing.isPresent()) {
             User user = existing.get();
             if (user.getCreationToken() != null && user.getCreationToken().isUsed()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuario ya registrado.");
             } else {
                 userDao.deleteById(email); // Limpiamos registros sucios anteriores
             }
@@ -73,13 +73,13 @@ public class UserService {
         Token userToken = user.getCreationToken();
         
         if (!userToken.getId().equals(token)) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid token");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Token invalido.");
         }
         if (userToken.getCreationTime() < System.currentTimeMillis() - 180000) { // 3 minutos
-            throw new ResponseStatusException(HttpStatus.GONE, "Token expired");
+            throw new ResponseStatusException(HttpStatus.GONE, "El token ha expirado.");
         }
         if (userToken.isUsed()) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Token already used");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Token ya en uso.");
         }
 
         userToken.use();
@@ -88,13 +88,13 @@ public class UserService {
 
     public User login(String email, String pwd) {
         User user = this.userDao.findById(email)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Bad email or password"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Email o contraseña incorrecta."));
 
         if (!user.getCreationToken().isUsed()) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Account not confirmed");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Cuenta no confirmada.");
         }
         if (!PasswordUtil.verify(pwd, user.getPwd())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bad email or password");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Email o contraseña incorrecta.");
         }
 
         return user;
