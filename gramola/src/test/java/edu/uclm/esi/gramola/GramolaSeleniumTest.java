@@ -148,16 +148,15 @@ public class GramolaSeleniumTest {
         gestionarPermisosSpotifySiAparecen(); 
 
         wait.until(ExpectedConditions.urlContains("/music"));
-        try {
-            WebElement btnAbrir = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//button[contains(text(),'Abrir Gramola')]")
-            ));
-            btnAbrir.click();
+        WebElement btnAbrir = wait.until(ExpectedConditions.elementToBeClickable(
+            By.xpath("//button[contains(normalize-space(), 'Abrir Gramola')]")
+        ));
+        btnAbrir.click();
 
-            wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.cssSelector("input[placeholder*='Escribe']")
-            ));    
-        } catch (Exception e) {}
+        // 4. Esperar a que salga la barra de búsqueda (Confirmamos que se ha abierto)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.cssSelector("input[placeholder*='Escribe']")
+        ));
 
         buscarCancion("Yellow"); 
 
