@@ -15,10 +15,8 @@ public class SongService {
     private SongDao songDao;
 
     public void addSong(String title, String artist, String bar) {
-        // La lógica de negocio (crear el objeto y poner la fecha) va aquí
         Song song = new Song(title, artist, new Date().toString(), bar);
-        
-        // Guardar en base de datos
+
         this.songDao.save(song);
     }
 }

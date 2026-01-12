@@ -27,18 +27,18 @@ public class UserService {
     }
 
     public void register(String bar, String email, String pwd, String clientId, String clientSecret) {
-        // 1. Validar si existe
+        // valida si existe
         Optional<User> existing = userDao.findById(email);
         if (existing.isPresent()) {
             User user = existing.get();
             if (user.getCreationToken() != null && user.getCreationToken().isUsed()) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuario ya registrado.");
             } else {
-                userDao.deleteById(email); // Limpiamos registros sucios anteriores
+                userDao.deleteById(email); // limpiamos registros sucios anteriores
             }
         }
 
-        // 2. Crear y guardar usuario
+        // crear y guardar usuario
         User user = new User();
         user.setBarName(bar);
         user.setEmail(email);
@@ -51,7 +51,7 @@ public class UserService {
         
         userDao.save(user);
 
-        // 3. Enviar email de bienvenida (Lógica movida desde el Controller)
+        // enviar email de bienvenida 
         String enlace = "http://127.0.0.1:8080/users/confirmToken/" + email + "?token=" + token.getId();
         
         SimpleMailMessage message = new SimpleMailMessage();
@@ -61,7 +61,7 @@ public class UserService {
         message.setText("Hola! Gracias por registrar tu bar.\n\n" +
                         "Haz clic aquí para confirmar y pagar:\n" + enlace);
 
-        // Si falla el envío, saltará la excepción y el Controller devolverá error 500, que es lo correcto.
+        // si falla el envío, saltará la excepción y el Controller devolverá error 500, que es lo correcto.
         mailSender.send(message); 
         System.out.println("Correo de bienvenida enviado a " + email);
     }

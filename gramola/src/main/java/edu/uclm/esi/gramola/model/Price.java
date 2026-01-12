@@ -3,7 +3,7 @@ package edu.uclm.esi.gramola.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "prices") // La tabla en BDD se llamará 'prices'
+@Table(name = "prices") 
 public class Price {
 
     @Id
@@ -11,7 +11,7 @@ public class Price {
     private Long id;
 
     @Column(nullable = false)
-    private String name;    // Ej: "Monthly Subscription"
+    private String name;    // Ej: "Subscripcion mensual"
 
     @Column(nullable = false)
     private Double value;   // Ej: 9.99
@@ -19,7 +19,6 @@ public class Price {
     @Column(nullable = false)
     private String type;    // Ej: "SUBSCRIPTION" o "SONG"
 
-    // Constructores
     public Price() {}
 
     public Price(String name, Double value, String type) {

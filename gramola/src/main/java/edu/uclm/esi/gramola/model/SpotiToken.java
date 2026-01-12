@@ -1,12 +1,10 @@
-// src/main/java/edu/uclm/esi/gramola/model/SpotiToken.java
+
 package edu.uclm.esi.gramola.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Modelo para representar el token de acceso devuelto por la API de Spotify.
- * Basado en La Gramola.1.docx - Figura 23.
- */
+//sirve para convertir automáticamente el texto JSON que te envía Spotify en un Objeto Java que tu código pueda entender y usar
+//se usa en la línea final del método getAuthorizationToken de SpotiService.java
 public class SpotiToken {
 
     @JsonProperty("access_token")

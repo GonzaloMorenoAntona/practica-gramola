@@ -49,7 +49,7 @@ export class ResetPassword implements OnInit {
     };
 
     // 3. Enviamos al backend
-    this.http.post('http://localhost:8080/users/reset-pwd', body).subscribe({
+    this.http.post('http://127.0.0.1:8080/users/reset-pwd', body).subscribe({
       next: () => {
         alert('¡Contraseña cambiada! Ahora entra con tu nueva clave.');
         this.router.navigate(['/login']);

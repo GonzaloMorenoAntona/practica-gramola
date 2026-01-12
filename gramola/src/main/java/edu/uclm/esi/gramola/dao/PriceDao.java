@@ -4,6 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PriceDao extends JpaRepository<Price, Long> {
-    // Buscará automáticamente por el campo 'type'
-    List<Price> findByType(String type);
+    List<Price> findByType(String type);// subscripcion o cancion
 }

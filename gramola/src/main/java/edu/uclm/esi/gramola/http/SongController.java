@@ -17,11 +17,10 @@ import edu.uclm.esi.gramola.services.SongService;
 public class SongController {
 
     @Autowired
-    private SongService songService; // Usamos el Servicio, NO el Dao
+    private SongService songService; 
 
     @PostMapping("/add")
     public void addSong(@RequestBody Map<String, String> info) {
-        // El controlador solo extrae los datos del JSON...
         String title = info.get("title");
         String artist = info.get("artist");
         String bar = info.get("bar");

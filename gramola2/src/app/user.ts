@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class UserService {
   
-  private apiUrlRegister = 'http://localhost:8080/users/register';
-  private apiUrlLogin = 'http://localhost:8080/users/login';
+  private apiUrlRegister = 'http://127.0.0.1:8080/users/register';
+  private apiUrlLogin = 'http://127.0.0.1:8080/users/login';
 
   showNavbar = signal<boolean>(true);
   isLoggedIn = signal<boolean>(!!sessionStorage.getItem('clientId'));

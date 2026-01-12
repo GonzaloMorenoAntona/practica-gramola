@@ -27,11 +27,10 @@ import edu.uclm.esi.gramola.model.User;
 public class PaymentService {
 
     static {
-        // Tu clave de Test de Stripe
+        // clave privada de Stripe
         Stripe.apiKey = "sk_test_51SIV0yRm0ClsCnoVDwqAd9ebRIBhNWfjVR5YjfChUYmQqm0BtOSqIAMcpanTNGh4f9R5RKJmtUHYPzXazTcwkWhA00fUleXm34";
     }
 
-    // --- INYECCIÓN DE REPOSITORIOS (DAOs) ---
     @Autowired
     private StripeTransactionDao transactionDao;
 
@@ -42,7 +41,7 @@ public class PaymentService {
     private PriceDao priceDao; 
 
 
-    // --- MÉTODOS PÚBLICOS (Usados por el Controller) ---
+    //metodos usasdo por el controller
 
     public List<Price> getSubscriptionPlans() {
         return this.priceDao.findByType("SUBSCRIPTION");
@@ -51,13 +50,13 @@ public class PaymentService {
     public Price getSongPrice() {
         List<Price> prices = this.priceDao.findByType("SONG");
         if (prices.isEmpty()) {
-            // Es mejor lanzar una excepción controlada si no hay precio
+            // si no hay precio en la base de datos 
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No hay precio configurado para canciones (SONG)");
         }
         return prices.get(0);
     }
 
-    // Lógica para /prepay (Suscripciones)
+    // Lógica para /prepay de las subscripciones
     public StripeTransaction iniciarTransaccionSuscripcion(Long priceId, String email) throws Exception {
         Price p = this.priceDao.findById(priceId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Plan de suscripción no encontrado"));
@@ -65,7 +64,7 @@ public class PaymentService {
         return this.prepay(p.getValue(), email);
     }
 
-    // Lógica para /prepay-song (Canciones)
+    // Lógica para /prepay-song de las canciones
     public String prepararPagoCancion(String songName, String email) throws Exception {
         Price songPrice = this.getSongPrice();
         long amountInCents = (long) (songPrice.getValue() * 100);
@@ -73,35 +72,32 @@ public class PaymentService {
         return this.prepareSongPaymentInternal(songName, amountInCents, email);
     }
 
-    // Lógica para /confirm (Confirmar registro)
+    // Lógica para /confirm 
     public void confirmarPagoRegistro(String tokenValue, String transactionId) {
-        // 1. Buscar usuario
-        User user = this.findByCreationToken(tokenValue);
-        
-        // 2. Validar token
+        User user = this.findByCreationToken(tokenValue); //busca el usuario por el token
+        //  valida el token
         Token userToken = user.getCreationToken();
         if (userToken == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no tiene un token de confirmación pendiente.");
         }
         
-        // 3. Consumir el token y activar usuario
+        // consumir el token y activar usuario
         userToken.use();
         user.setActive(true);
         user.setPaid(true);
         user.setValidationDate(new Date());
 
-        // 4. Guardar cambios en BD
         this.userDao.save(user);
     }
     
-    // Método auxiliar para buscar usuario por token
+    // método auxiliar para buscar usuario por token
     public User findByCreationToken(String token) {
         return userDao.findByCreationToken_Id(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token inválido o usuario no encontrado"));
     }
 
-    
-    // --- MÉTODOS INTERNOS (Lógica de Stripe) ---
+
+    // métodos privados de ayuda, los que hacen el trabajo con Stripe
 
     public StripeTransaction prepay(double amount, String email) throws StripeException {
         long amountInCents = (long) (amount * 100); 

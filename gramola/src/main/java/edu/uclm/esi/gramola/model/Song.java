@@ -18,15 +18,13 @@ public class Song {
 
     public Song() {}
 
-    // Constructor con datos
     public Song(String title, String artist, String date, String bar) {
         this.title = title;
         this.artist = artist;
         this.date = date;
         this.bar = bar;
     }
-
-    // Getters y Setters (puedes generarlos con clic derecho -> Source -> Generate...)
+    // Getters y Setters
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 

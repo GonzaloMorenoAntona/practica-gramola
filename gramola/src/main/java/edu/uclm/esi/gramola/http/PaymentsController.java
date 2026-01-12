@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("payments")
-@CrossOrigin(origins = { "http://localhost:4200", "http://127.0.0.1:4200" }, allowCredentials = "true")
+@CrossOrigin(origins = { "http://127.0.0.1:4200" }, allowCredentials = "true")
 public class PaymentsController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class PaymentsController {
     public List<Price> getSubscriptionPlans() {
         return this.service.getSubscriptionPlans();
     }
-
+    //prepara todo antes de que se vea el formulario de tarjeta de Stripe
     @PostMapping("/prepay")
     public StripeTransaction prepay(HttpSession session, @RequestBody Map<String, Object> body) {
         try {
@@ -51,7 +51,7 @@ public class PaymentsController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
+    // valida el pago una vez introducidos los datos de la tarjeta
     @PostMapping("/confirm")
     public ResponseEntity<Map<String, String>> confirm(HttpSession session, @RequestBody Map<String, String> body) {
         String token = body.get("token");
@@ -62,7 +62,6 @@ public class PaymentsController {
         }
 
         try {
-            // Delegamos toda la lógica al servicio
             this.service.confirmarPagoRegistro(token, transactionId);
 
             session.removeAttribute("transactionDetails");
@@ -80,7 +79,7 @@ public class PaymentsController {
     public Map<String, String> prepaySong(@RequestBody Map<String, Object> body) {
         try {
             String songName = (String) body.get("songName");
-            String email = (String) body.get("email");
+            String email = (String) body.get("email"); // desde que bar se hace la cmpra
             
             String clientSecret = this.service.prepararPagoCancion(songName, email);
 

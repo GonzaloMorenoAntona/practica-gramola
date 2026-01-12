@@ -11,7 +11,7 @@ export class PaymentService {
 
   // 1. NUEVO: Método para pedir la lista de precios al servidor
   getPlans(): Observable<any[]> {
-    return this.client.get<any[]>('http://localhost:8080/payments/plans', { 
+    return this.client.get<any[]>('http://127.0.0.1:8080/payments/plans', { 
       withCredentials: true 
     });
   }
@@ -22,7 +22,7 @@ export class PaymentService {
     const body = { priceId: selectedPlanId, token: token };
 
     // Cambiamos .get por .post porque estamos enviando datos (el body)
-    return this.client.post('http://localhost:8080/payments/prepay', body, {
+    return this.client.post('http://127.0.0.1:8080/payments/prepay', body, {
       withCredentials: true,
       observe: 'response',
       responseType: 'text' // Mantenemos esto IGUAL que lo tenías para que no falle
@@ -32,13 +32,13 @@ export class PaymentService {
   // 3. ESTE SE QUEDA EXACTAMENTE IGUAL QUE LO TENÍAS
   confirm(transactionId: string, token: string): Observable<any> {
     const body = { transactionId, token };
-    return this.client.post('http://localhost:8080/payments/confirm', body, {
+    return this.client.post('http://127.0.0.1:8080/payments/confirm', body, {
       withCredentials: true,
       observe: 'response'
     });
   }
   getSongPrice(): Observable<any> {
-    return this.client.get('http://localhost:8080/payments/song-price', { 
+    return this.client.get('http://127.0.0.1:8080/payments/song-price', { 
       withCredentials: true 
     });
   }

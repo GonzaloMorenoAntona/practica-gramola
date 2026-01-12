@@ -24,16 +24,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("users")
-@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://127.0.0.1:4200"}, allowCredentials = "true")
 public class UserController {
 
-    private final UserService userService;
-
-    // Inyección limpia por constructor
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired  
+    private UserService userService;
 
     @PostMapping("/register")
     public void register(@RequestBody Map<String, String> body) {
@@ -55,20 +50,20 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email no válido");
         }
 
-        // Delegamos TODA la lógica al servicio (registro + email)
+        // Delegamos TODA la lógica al servicio 
         this.userService.register(bar, email, pwd1, clientId, clientSecret);
     }
 
     @GetMapping("/confirmToken/{email}")
     public void confirmToken(
-        @PathVariable String email,
-        @RequestParam String token,
-        HttpServletResponse response
+        @PathVariable String email, // forma parte de la ruta
+        @RequestParam String token, //parametro de consulta para buscar la clave token
+        HttpServletResponse response // para dar una orden de navegación en este caso al email
     ) throws IOException {
-        // Delegamos la validación al servicio
+        // delegamos la validación al servicio
         this.userService.confirmToken(email, token);
 
-        // Si el servicio no lanza excepción, redirigimos
+        // si el servicio no lanza excepción, redirigimos
         response.sendRedirect("http://127.0.0.1:4200/payment?token=" + token);
     }
 
@@ -80,10 +75,10 @@ public class UserController {
         User user = this.userService.login(email, pwd);
 
         Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("clientId", user.getClientId());
+        responseBody.put("clientId", user.getClientId()); // Angular necesita este código para inicializar el reproductor de Spotify
+        // evitar null en la respuesta del nombre del bar
         String elBar = (user.getBarName() != null) ? user.getBarName() : ""; 
         responseBody.put("bar", elBar);
-
         return ResponseEntity.ok(responseBody);
     }
 
