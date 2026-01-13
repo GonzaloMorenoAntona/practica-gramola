@@ -13,7 +13,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'callback', component: CallbackComponent },
   { path: 'music', component: MusicComponent },
-  { path: '', redirectTo: '/register', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'reset-password', component: ResetPassword }
 ];

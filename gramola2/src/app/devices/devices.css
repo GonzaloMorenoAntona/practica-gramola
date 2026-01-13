@@ -36,18 +36,6 @@ li:hover {
   background-color: rgba(100, 255, 218, 0.05);
 }
 
-/* Estilo para el dispositivo activo */
-li.active-device {
-  border-color: #64ffda;
-  background-color: rgba(100, 255, 218, 0.1);
-  box-shadow: 0 0 10px rgba(100, 255, 218, 0.1);
-}
-
-/* Icono (Si usas alguno, o el texto) */
-.device-icon {
-  font-size: 1.2rem;
-}
-
 .device-name {
   font-weight: 500;
   color: #e6f1ff;

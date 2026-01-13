@@ -1,4 +1,4 @@
-/* Tarjetas */
+/* Estructura de Tarjetas */
 .card {
   background: white;
   border: 1px solid #ddd;
@@ -9,7 +9,7 @@
 }
 
 .card-header {
-  padding: 15px;
+  padding: 10px 15px;
   background: #f9f9f9;
   border-bottom: 1px solid #eee;
   display: flex;
@@ -18,48 +18,29 @@
 }
 
 .card-title {
-  font-size: 1.1em;
+  margin: 0;
+  font-weight: bold;
   color: #333;
 }
 
-/* Listas y Tablas */
-.list {
-  padding: 0;
-}
+/* Tablas y Listas */
+.list { padding: 15px; }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+table { width: 100%; border-collapse: collapse; }
+td, th { padding: 10px; text-align: left; }
+tr { border-bottom: 1px solid #eee; }
 
-td, th {
-  padding: 10px;
-  text-align: left;
-}
-
-/* Botones */
-.link-btn {
-  background: #333;
-  color: white;
+/* Botón base para no repetir estilos */
+button {
   border: none;
   border-radius: 4px;
-  padding: 8px 25px;
   cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap;
+  padding: 8px 15px;
 }
 
-.link-btn:hover {
-  opacity: 0.9;
-}
-
-/* Input del buscador */
-input[type="text"] {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  border-color: #1db954;
+/* Modal de pago con el fondo oscuro */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); z-index: 2000;
+  display: flex; justify-content: center; align-items: center;
 }

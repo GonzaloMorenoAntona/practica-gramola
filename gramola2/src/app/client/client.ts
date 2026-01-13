@@ -5,21 +5,18 @@ import { SpotifyService } from '../spotify';
 import { PaymentService } from '../payment-service';
 import { Router } from '@angular/router';
 import { UserService } from '../user';
-
-// IMPORTANTE: Importamos tu componente de pagos existente
-import { PaymentComponent } from '../payments/payments';
+import { PaymentComponent } from '../payments/payments'; //para poder usar el componente de pago en el HTML
 
 @Component({
   selector: 'app-client',
   standalone: true,
-  // AÑADIMOS PaymentComponent AQUÍ
   imports: [CommonModule, FormsModule, PaymentComponent],
   templateUrl: './client.html',
   styleUrls: ['./client.css']
 })
 export class ClientComponent implements OnInit, OnDestroy {
   
-  @Input() isFullWidth: boolean = false;
+  @Input() isFullWidth: boolean = false; //dejarlo son con la cola y el buscador
 
   // Variables de Cola y Reproducción
   queue: any[] = [];
@@ -44,13 +41,13 @@ export class ClientComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 1. Cargar la cola inicial y activar el "Polling" (actualizar cada 5s)
+    // cargar la cola inicial y activar el "Polling" (actualizar cada 5s)
     this.getRealQueue();
     this.refreshInterval = setInterval(() => {
       this.getRealQueue();
     }, 5000);
 
-    // 2. Obtener el precio de la canción
+    // obtener el precio de la canción
     this.paymentService.getSongPrice().subscribe({
       next: (data: any) => {
         this.songPrice = data.value;
@@ -65,18 +62,18 @@ export class ClientComponent implements OnInit, OnDestroy {
     }
   }
 
-  // --- LÓGICA DE COLA REAL ---
+  // cola real de Spotify
   getRealQueue() {
     this.spoti.getUserQueue().subscribe({
       next: (data: any) => {
-        this.currentTrack = data.currently_playing;
+        this.currentTrack = data.currently_playing;//accede al objeto actualmente reproducido
         this.queue = data.queue;
       },
       error: (e) => console.error("Error obteniendo cola real:", e)
     });
   }
 
-  // --- LÓGICA DEL BUSCADOR ---
+  // búsqueda de canciones
   search() {
     if (!this.searchQuery) return;
     this.searchError = undefined;
@@ -95,19 +92,16 @@ export class ClientComponent implements OnInit, OnDestroy {
     this.searchError = undefined;
   }
 
-  // --- LÓGICA DE PAGOS (Ahora mucho más simple) ---
+  // logica del Modal de Pago
   
   openPaymentModal(track: any) {
     this.selectedTrack = track;
-    // Solo mostramos el modal. La lógica de Stripe ahora la hace el componente hijo.
-    this.showPaymentModal = true;
+    this.showPaymentModal = true; // muestra el modal, lo demas lo hace PaymentComponent
   }
 
   // Este método se ejecuta cuando el componente PaymentComponent nos avisa del éxito
   onSongPaid(track: any) {
     this.showPaymentModal = false; // Cerramos modal
-    
-    // Añadimos a la cola y guardamos en BD
     this.addSongToQueue(track);
     
     let barName = sessionStorage.getItem('barName') || 'Bar Desconocido';
@@ -117,7 +111,7 @@ export class ClientComponent implements OnInit, OnDestroy {
   addSongToQueue(track: any) {
     this.spoti.addToQueue(track.uri).subscribe({
       next: () => {
-        console.log(`✅ "${track.name}" añadida.`);
+        console.log(`"${track.name}" añadida.`);
         this.clearSearch();
         
         // Esperamos 1.5s y actualizamos la cola visualmente

@@ -1,44 +1,48 @@
 <div class="centered-container">
-  <div class="auth-card" style="max-width: 500px;"> <h2>Registrar Bar</h2>
+  <div class="auth-card">
+    
+    <h2>Registrar Bar</h2>
     
     <div class="form-group">
       <label>Nombre del establecimiento</label>
-      <input [(ngModel)]="bar" name="barName" type="text" placeholder="Ej: Bar Manolo">
+      <input [(ngModel)]="bar" type="text" placeholder="Ej: Bar Manolo">
     </div>
 
     <div class="form-group">
       <label>Email de administrador</label>
-      <input [(ngModel)]="email" name="email" type="email" placeholder="admin@bar.com">
+      <input [(ngModel)]="email" type="email" placeholder="admin@bar.com">
     </div>
 
-    <div style="display: flex; gap: 15px;">
-      <div class="form-group" style="flex: 1;">
+    <div class="flex-row">
+      <div class="form-group">
         <label>Contraseña</label>
-        <input [(ngModel)]="pwd1" name="pwd1" type="password">
+        <input [(ngModel)]="pwd1" type="password">
       </div>
-      <div class="form-group" style="flex: 1;">
+      <div class="form-group">
         <label>Repetir</label>
-        <input [(ngModel)]="pwd2" name="pwd2" type="password">
+        <input [(ngModel)]="pwd2" type="password">
       </div>
     </div>
 
     <div class="form-group">
       <label>Spotify Client ID</label>
-      <input [(ngModel)]="clientId" name="clientId" type="text" style="font-family: monospace;">
+      <input [(ngModel)]="clientId" type="text" class="mono">
     </div>
 
     <div class="form-group">
       <label>Spotify Client Secret</label>
-      <input [(ngModel)]="clientSecret" name="clientSecret" type="text" style="font-family: monospace;">
+      <input [(ngModel)]="clientSecret" type="text" class="mono">
     </div>
 
     <button (click)="registrar()">CREAR CUENTA</button>
 
-    <div *ngIf="registroOK" class="success-msg">
-      <b>¡Registro exitoso!</b><br> Revisa tu correo para confirmar la cuenta.
+    <div *ngIf="registroOK" class="msg success">
+      <b>¡Registro exitoso!</b><br> Revisa tu correo.
     </div>
-    <div *ngIf="registroKO" class="error-msg">
+    
+    <div *ngIf="registroKO" class="msg error">
       {{ errorMessage }}
     </div>
+
   </div>
 </div>

@@ -10,10 +10,10 @@ export class SpotifyService {
 
   // URLs de Spotify
   private readonly authorizeUrl: string = 'https://accounts.spotify.com/authorize';
-  private readonly redirectUrl: string = 'http://127.0.0.1:4200/callback'; // Debe coincidir con la app de Spotify
+  private readonly redirectUrl: string = 'http://127.0.0.1:4200/callback'; 
   private readonly spotiV1Url: string = 'https://api.spotify.com/v1';
 
-  // Scopes solicitados (Figura 16 del PDF)
+  // Scopes solicitados 
   private readonly scopes: string[] = [
     "user-read-private", "user-read-email", "playlist-read-private",
     "playlist-read-collaborative", "user-read-playback-state",
@@ -22,28 +22,23 @@ export class SpotifyService {
     "user-top-read", "app-remote-control", "streaming"
   ];
 
-  // URL base de tu backend para el intercambio de código (debe coincidir con el del controlador)
+  // URL base del backend para el intercambio de código 
   private readonly backendUrl: string = 'http://127.0.0.1:8080/spoti';
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Inicia el flujo de autorización OAuth 2.0 con Spotify.
-   * Recupera el client_id de sessionStorage, genera el state,
-   * construye la URL y redirige el navegador.
-   */
   getToken(): void {
-    // 1. Recuperar clientId de sessionStorage
+    // recuperar clientId de sessionStorage
     const clientId = sessionStorage.getItem('clientId');
     if (!clientId) {
       console.error('SpotifyService: No se encontró clientId en sessionStorage. Debe iniciar sesión primero.');
       return;
     }
 
-    // 2. Generar state
+    // generar state, que sirve para asegurarse de que el usuario que inicia sesión es el mismo que vuelve
       const state = this.generateString();
 
-    // 4. Construir parámetros de la URL
+    // construir parámetros de la URL
     let params = "response_type=code";
     params += `&client_id=${sessionStorage.getItem("clientId")}`;
     params += `&scope=${encodeURIComponent(this.scopes.join(" "))}`;
@@ -56,18 +51,12 @@ export class SpotifyService {
   }
 
   getAuthorizationToken(code: string): Observable<any> {
-      // 1. Recuperar clientId de sessionStorage
+      // recuperar clientId de sessionStorage
     let url = `${this.backendUrl}/getAuthorizationToken?code=${code}&clientId=${sessionStorage.getItem("clientId")}`;
     return this.http.get(url)
   }
-
-
-    /**
-     * Genera un string aleatorio para el parámetro state (prevención de CSRF).
-     * @returns El string generado.
-     */
+  // método para generar un string aleatorio para el state, para evitar CSRF
   private generateString(): string {
-    // Ejemplo simple, puedes usar librerías más robustas
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
@@ -85,26 +74,18 @@ export class SpotifyService {
     });
 
     const body = {
-      context_uri: uri // El DNI de la playlist
+      context_uri: uri 
     };
     return this.http.put(`${this.spotiV1Url}/me/player/play`, body, { headers });
 }
 
   getPlaylists(): Observable<any> {
     const headers = new HttpHeaders({
-      // Usamos el mismo token que ya guarde en el callback
       'Authorization': `Bearer ${sessionStorage.getItem("spotify_access_token")}`
     });
-    // La URL base (https://api.spotify.com/v1) + el endpoint
+    // a URL base (https://api.spotify.com/v1) + el endpoint
     let url = `${this.spotiV1Url}/me/playlists`;
   return this.http.get<any>(url, { headers });
-  }
-
-  getPlaylistTracks(playlistId: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${sessionStorage.getItem("spotify_access_token")}`
-    });
-    return this.http.get(`${this.spotiV1Url}/playlists/${playlistId}/tracks`, { headers });
   }
 
   search(q: string, type: string = 'track'): Observable<any> {
@@ -140,7 +121,6 @@ export class SpotifyService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${sessionStorage.getItem("spotify_access_token")}`
     });
-    // Llamamos al endpoint oficial de la cola
     return this.http.get(`${this.spotiV1Url}/me/player/queue`, { headers });
   }
 }

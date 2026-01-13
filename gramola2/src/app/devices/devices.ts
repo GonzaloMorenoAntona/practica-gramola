@@ -7,8 +7,8 @@ import { SpotifyService } from '../spotify';
   selector: 'app-devices',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './devices.html', // <--- Enlace al HTML separado
-  styleUrls: ['./devices.css']   // <--- Enlace al CSS separado
+  templateUrl: './devices.html', 
+  styleUrls: ['./devices.css']   
 })
 export class DevicesComponent implements OnInit {
   devices: any[] = [];

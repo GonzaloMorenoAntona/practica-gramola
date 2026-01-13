@@ -21,7 +21,6 @@ export class RegisterComponent {
   registroOK : boolean = false;
   registroKO : boolean = false;
   
-  // 1. AÑADIMOS ESTA VARIABLE PARA GUARDAR EL TEXTO DEL ERROR
   errorMessage: string = "";
 
   constructor(private service : UserService) { }
@@ -32,7 +31,7 @@ export class RegisterComponent {
     this.registroKO = false;
     this.errorMessage = ""; 
     
-    // Validación de contraseñas local
+    // validación de contraseñas 
     if (this.pwd1 !== this.pwd2) {
       this.registroKO = true;
       this.errorMessage = "Las contraseñas no coinciden";
@@ -48,8 +47,6 @@ export class RegisterComponent {
       error: (err) => {
         this.registroKO = true;
         
-        // 2. AQUÍ CAPTURAMOS EL MENSAJE REAL DEL BACKEND
-        // Si Java lanza "Usuario ya registrado", Angular lo recibe en err.error.message o err.error
         this.errorMessage = err.error?.message || err.error || "Error desconocido en el registro";
         
         console.error('Error detallado:', err);

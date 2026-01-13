@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { UserService } from '../user';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [FormsModule, CommonModule], // Importante para usar ngModel y *ngIf
+  imports: [FormsModule, CommonModule, RouterLink], 
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css'
 })
@@ -15,7 +17,7 @@ export class ForgotPassword {
   mensaje: string = '';
   errorMsg: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private userService: UserService) {}
 
   pedirRecuperacion() {
     this.mensaje = '';
@@ -23,12 +25,11 @@ export class ForgotPassword {
 
     const body = { email: this.email };
 
-    // responseType: 'text' es vital porque el backend devuelve un String (la URL), no un JSON
-    this.http.post('http://127.0.0.1:8080/users/request-reset-pwd', body, { responseType: 'text' })
+    // llamamos al servicio para pedir la recuperación
+    this.userService.requestResetPassword(this.email)
       .subscribe({
         next: (respuesta) => {
-          // El backend nos devuelve la URL simulada
-          this.mensaje = 'Correo enviado. Copia este enlace en tu navegador: ' + respuesta;
+          this.mensaje = 'Hemos enviado un enlace. ¡Revisa tu bandeja de entrada!';
         },
         error: (err) => {
           this.errorMsg = 'Error: El correo no existe o hubo un fallo.';

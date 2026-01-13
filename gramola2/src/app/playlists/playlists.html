@@ -1,17 +1,39 @@
-<div class="card">
-  <div class="card-header">
-    <strong class="card-title">Mis Playlists</strong>
-    <button class="link-btn" type="button" (click)="getPlaylists()">Recargar</button>
+<div class="playlists-container">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; gap: 15px;">
+    <h3>Mis Playlists</h3>
+    <button class="link-btn" (click)="getPlaylists()" style="font-size: 0.8rem; height: fit-content;">
+      Recargar
+    </button>
   </div>
-  <div class="list">
-    <div class="row playlist-row" *ngFor="let p of playlists" (click)="selectPlaylist(p)">
-      <img [src]="p.images[0]?.url || 'assets/no-image.png'" width="50" height="50" class="playlist-img">
+
+  <div class="playlist-list">
+    
+    <div *ngFor="let p of playlists" 
+         class="playlist-item" 
+         (click)="selectPlaylist(p)">
       
-      <div style="overflow: hidden;">
-        <span class="playlist-name">{{ p.name }}</span>
-        <small style="color: #666;">({{ p.tracks.total }} canciones)</small>
+      <img [src]="p.images[0]?.url || 'assets/no-image.png'" 
+           alt="Portada" 
+           class="playlist-img">
+
+      <div class="playlist-info">
+        <div class="playlist-name">{{ p.name }}</div>
+        <div class="playlist-tracks">{{ p.tracks.total }} canciones</div>
       </div>
+
+      <div class="play-icon">▶</div>
+    
     </div>
+
   </div>
-  <div class="error" *ngIf="playlistError">{{ playlistError }}</div>
+
+  <div *ngIf="playlists.length === 0 && !playlistError" style="padding: 20px; text-align: center; color: #8892b0; font-size: 0.9rem;">
+    No se encontraron playlists.
+  </div>
+
+  <div class="error" *ngIf="playlistError" style="color: #ff6b6b; margin-top: 10px; text-align: center;">
+    {{ playlistError }}
+  </div>
+
 </div>

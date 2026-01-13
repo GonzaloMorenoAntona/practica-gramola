@@ -8,7 +8,6 @@ import { UserService } from '../user';
 @Component({
   selector: 'app-music',
   standalone: true,
-  // AQUÍ "DECLARAMOS" QUE VAMOS A USAR ESTOS COMPONENTES EN EL HTML
   imports: [CommonModule, DevicesComponent, PlaylistsComponent, ClientComponent],
   templateUrl: './music.html',
   styleUrls: ['./music.css']
@@ -19,28 +18,26 @@ export class MusicComponent implements OnDestroy {
   
   isAdmin: boolean = true;
 
-  // Accedemos al hijo (ClientComponent) para poder decirle "¡Actualízate!"
+  // Accedemos al hijo (ClientComponent) para poder decirle que recargue la cola
   @ViewChild(ClientComponent) clientComponent!: ClientComponent;
 
   toggleMode() {
-    this.isAdmin = !this.isAdmin;
-    this.userService.showNavbar.set(this.isAdmin);
+    this.isAdmin = !this.isAdmin; //para saber si estamos en modo admin o cliente
+    this.userService.showNavbar.set(this.isAdmin); //mostrar u ocultar la barra de navegación
   }
 
-  // Esta función se ejecuta cuando PlaylistsComponent nos avisa de que ha puesto música
+  // esta función se ejecuta cuando PlaylistsComponent nos avisa de que ha puesto música
   onPlaylistPlayed() {
     console.log("Playlist activada, mandando señal al cliente...");
     
-    // Le decimos al componente Cliente que recargue su cola
-    // Esperamos 1.5s a que Spotify procese la orden
+    // le decimos al componente Cliente que recargue su cola
     if (this.clientComponent) {
       setTimeout(() => {
         this.clientComponent.getRealQueue();
       }, 1500);
     }
   }
-  //Si salimos de esta página, asegurar que la barra vuelve a aparecer
   ngOnDestroy() {
-    this.userService.showNavbar.set(true);
+    this.userService.showNavbar.set(true);  //si salimos de esta página, asegurar que la barra vuelve a aparecer
   }
 }

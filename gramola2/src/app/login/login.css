@@ -1,0 +1,43 @@
+/* Layout General */
+.centered-container {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; background-color: #020c1b; font-family: sans-serif;
+}
+
+.auth-card {
+  background: #112240; padding: 40px; width: 100%; max-width: 400px;
+  border-radius: 8px; color: #e6f1ff; text-align: center;
+}
+
+h2 { color: #ccd6f6; margin-bottom: 30px; }
+
+/* Inputs */
+.form-group { margin-bottom: 20px; text-align: left; }
+
+label { display: block; color: #64ffda; margin-bottom: 8px; font-size: 0.9em; }
+
+input {
+  width: 100%; padding: 12px; box-sizing: border-box;
+  background: #0a192f; border: 1px solid #233554; color: #fff; border-radius: 4px;
+}
+
+/* Textos de Error (Validación pequeña) */
+.validation-error { color: #ff6b6b; font-size: 0.85em; margin-top: 5px; }
+
+/* Caja de Error General (Grande) */
+.msg.error {
+  margin-top: 15px; padding: 10px; border-radius: 4px; margin-bottom: 15px;
+  border: 1px solid #ff6b6b; color: #ff6b6b; background: rgba(255, 107, 107, 0.1);
+}
+
+/* Botón */
+button {
+  width: 100%; padding: 12px; margin-top: 10px; cursor: pointer;
+  background: #64ffda; color: #0a192f; border: none; font-weight: bold; border-radius: 4px;
+}
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Enlaces */
+.forgot-link { margin-top: 20px; font-size: 0.9em; }
+a { color: #8892b0; text-decoration: none; }
+a:hover { color: #64ffda; text-decoration: underline; }

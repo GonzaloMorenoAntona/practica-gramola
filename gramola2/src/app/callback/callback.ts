@@ -1,12 +1,12 @@
 // callback.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SpotifyService } from '../spotify'; // Ajusta la ruta si es necesario
+import { SpotifyService } from '../spotify'; 
 
 @Component({
   selector: 'app-callback',
   standalone: true,
-  imports: [], // Añade imports si necesitas mostrar un mensaje de carga, etc.
+  imports: [], 
   templateUrl: './callback.html',
   styleUrl: './callback.css'
 })
@@ -15,36 +15,34 @@ export class CallbackComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private spotifyService: SpotifyService // Inyecta SpotifyService (o SpotiService si lo llamaste así)
+    private spotifyService: SpotifyService 
   ) { }
 
   ngOnInit(): void {
-    // 1. Recuperar parámetros de la URL
-    const qp = this.route.snapshot.queryParamMap;
-    const code = qp.get('code');
+    // extrae los parámetros de la URL
+    const qp = this.route.snapshot.queryParamMap; 
+    const code = qp.get('code'); //cupon temporal
     const state = qp.get('state');
     const error = qp.get('error');
 
-    // 2. Manejar posibles errores de Spotify
+    // manejar posibles errores de Spotify
     if (error) {
       console.error('CallbackComponent: Error recibido de Spotify:', error);
-      // Opcional: mostrar mensaje en la vista
       alert(`Error de Spotify: ${error}`);
-      this.router.navigateByUrl('/login'); // O a donde consideres
+      this.router.navigateByUrl('/login'); //redirige a login o página de error
       return;
     }
 
-    // 3. Verificar que se recibieron code y state
+    // verificar que se recibieron code y state
     if (!code || !state) {
       console.error('CallbackComponent: No se recibió code o state de Spotify.');
-      alert("No hay código o estado"); // O manejo más elegante
-      // Opcional: redirigir a login o página de error
+      alert("No hay código o estado"); 
       this.router.navigateByUrl('/login');
       return;
     }
 
-   history.replaceState({}, '', '/callback'); 
- 
+   history.replaceState({}, '', '/callback'); // limpia la URL y la deja con el /callback
+    // intercambia el código por un token de acceso
     this.spotifyService.getAuthorizationToken(code).subscribe({ 
       next: (data) => { 
         sessionStorage.setItem("spotify_access_token", data.access_token); 
@@ -52,9 +50,8 @@ export class CallbackComponent implements OnInit {
       }, 
       error: (err) => { 
         console.error('Error fetching access token:', err); 
-        // AÑADE ESTO:
         alert("Error conectando con el servidor de Spotify. Mira la consola (F12)");
-        this.router.navigateByUrl('/login'); // Te devuelve al inicio para reintentar
+        this.router.navigateByUrl('/login'); // te devuelve al inicio para reintentar
       }
     });
 }

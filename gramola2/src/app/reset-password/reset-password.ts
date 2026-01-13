@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // <--- Importante para *ngIf
-import { FormsModule } from '@angular/forms';   // <--- Importante para [(ngModel)]
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms';   
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from '../user';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  // OJO AQUÍ: Tienen que estar estos dos imports para que funcionen los "ng"
   imports: [CommonModule, FormsModule], 
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css'
@@ -21,12 +21,12 @@ export class ResetPassword implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient,
+    private userService: UserService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Esto lee el token de la barra de direcciones (?token=XYZ)
+    // esto lee el token de la barra de direcciones 
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
       if (!this.token) {
@@ -36,20 +36,20 @@ export class ResetPassword implements OnInit {
   }
 
   cambiarPass() {
-    // 1. Validamos que las contraseñas coincidan
+    // validamos que las contraseñas coincidan
     if (this.newPwd !== this.newPwd2) {
       this.errorMsg = 'Las contraseñas no coinciden.';
       return;
     }
 
-    // 2. Preparamos los datos
+    // preparamos los datos
     const body = {
       token: this.token,
       newPwd: this.newPwd
     };
 
-    // 3. Enviamos al backend
-    this.http.post('http://127.0.0.1:8080/users/reset-pwd', body).subscribe({
+    // llamamos al servicio para cambiar la contraseña
+    this.userService.confirmarResetPassword(this.token, this.newPwd).subscribe({
       next: () => {
         alert('¡Contraseña cambiada! Ahora entra con tu nueva clave.');
         this.router.navigate(['/login']);

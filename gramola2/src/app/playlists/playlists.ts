@@ -14,7 +14,7 @@ export class PlaylistsComponent implements OnInit {
   playlists: any[] = [];
   playlistError?: string;
 
-  // Evento para avisar al padre
+  // evento para avisar al padre
   @Output() playlistPlayed = new EventEmitter<void>();
 
   constructor(private spoti: SpotifyService) {}
@@ -34,7 +34,7 @@ export class PlaylistsComponent implements OnInit {
     console.log('Activando playlist:', item.name);
     this.spoti.playContext(item.uri).subscribe({
       next: () => {
-        // Emitimos evento para que el padre se entere
+        // emitimos evento para que el padre se entere
         this.playlistPlayed.emit();
       },
       error: (err) => {

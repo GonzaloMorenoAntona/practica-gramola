@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PaymentService } from '../payment-service';
-import { SpotifyService } from '../spotify'; // <--- Necesario para el pago de canción
+import { SpotifyService } from '../spotify'; 
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
@@ -16,13 +16,13 @@ declare let Stripe: any
 })
 export class PaymentComponent implements OnInit {
 
-  // --- AÑADIMOS ESTOS INPUTS/OUTPUTS PARA QUE FUNCIONE DESDE EL CLIENT ---
+  // añadimos inputs y outputs para el modo canción
   @Input() mode: 'subscription' | 'song' = 'subscription';
   @Input() songTrack: any = null;
   @Input() songPrice: number = 0;
   
   @Output() close = new EventEmitter<void>();     // Para cerrar el modal
-  @Output() songPaid = new EventEmitter<any>();   // Para avisar que se pagó
+  @Output() songPaid = new EventEmitter<any>();   // Para avisar que se pagó, enviando la cancion
 
   stripe = new Stripe("pk_test_51SIV0yRm0ClsCnoVWXB3iOiEfdtda0z61OvJDYLWIIAq5FQZuIdFOAb4sEwtk8w2eEooAbJXOSKxsuGw3j56g5G900aYokx6Qx")
   transactionDetails: any;
@@ -33,12 +33,12 @@ export class PaymentComponent implements OnInit {
   constructor(
     private PaymentService: PaymentService, 
     private router : Router,
-    private spoti: SpotifyService // <--- Inyectamos servicio
+    private spoti: SpotifyService 
   ) { }
 
   ngOnInit(): void {
     if (this.mode === 'subscription') {
-        // Lógica original de suscripción
+        // MODO SUSCRIPCIÓN: Cargamos planes y token
         const params = this.router.parseUrl(this.router.url).queryParams;
         this.token = params['token'];
         this.PaymentService.getPlans().subscribe(data => this.plans = data);
@@ -48,21 +48,17 @@ export class PaymentComponent implements OnInit {
     }
   }
 
-  // --- NUEVO MÉTODO: PREPARAR PAGO DE CANCIÓN ---
+  // método para iniciar el pago de canción
   initSongPayment() {
-    // 1. Pedimos el ClientSecret al backend
     let emailBar = sessionStorage.getItem('barEmail') || '';
     this.spoti.prepareSongPayment(this.songTrack.name, emailBar).subscribe({
         next: (res: any) => {
-            // 2. Simulamos la estructura que usabas en 'prepay' para reutilizar tu código
-            // Tu 'prepay' devolvía un body que parseabas. Aquí construimos el objeto directo.
             this.transactionDetails = { 
                 data: { client_secret: res.clientSecret } 
             };
             
-            // 3. Llamamos a TU método original showForm
-            // Usamos setTimeout para asegurar que el HTML se ha pintado
-            setTimeout(() => this.showForm(), 100);
+            //  Llamamos al metodo original showForm
+            setTimeout(() => this.showForm(), 100);//con el timeout evitamos problemas de renderizado
         },
         error: (e) => alert("Error iniciando pago: " + e.message)
     });
@@ -73,14 +69,13 @@ export class PaymentComponent implements OnInit {
     this.PaymentService.prepay(this.selectedPlanId, this.token!).subscribe({
       next: (response: any) => {
         this.transactionDetails = JSON.parse(response.body); 
-        this.showForm(); // Tu método original
+        this.showForm(); 
       },
       error: (e) => alert("Error: " + (e.error?.message || e.message))
     });
   }
-
+  //esta es la unica forma de que el input de la tarjeta se vea bonito y coincida, por cuestiones de seguridad
   showForm() {
-    // ESTO ES LO QUE TÚ TENÍAS, LO DEJAMOS IGUAL
     let elements = this.stripe.elements()
     let style = {
       base: {
@@ -109,7 +104,7 @@ export class PaymentComponent implements OnInit {
     let self = this
     let form = document.getElementById("payment-form");
     
-    // IMPORTANTE: Clonamos el nodo o nos aseguramos de no acumular listeners si se abre/cierra muchas veces
+    // Clonamos el nodo o nos aseguramos de no acumular listeners si se abre/cierra muchas veces
     // Para simplificar, usamos tu lógica directa:
     if (form) {
         form.style.display = "block";
@@ -128,7 +123,7 @@ export class PaymentComponent implements OnInit {
       payment_method: { card: card }
     }).then(function (response: any) {
       if (response.error) {
-        // Escribimos el error en el párrafo <p id="card-error"> que tienes en el HTML
+        // Escribimos el error en el párrafo del HTML
         const errorElement = document.getElementById('card-error');
         if (errorElement) {
             errorElement.textContent = response.error.message;
