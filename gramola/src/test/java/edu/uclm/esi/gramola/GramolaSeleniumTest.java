@@ -17,7 +17,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions; // <--- ESTE IMPORT ES VITAL
+import org.openqa.selenium.interactions.Actions; 
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class GramolaSeleniumTest {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    // --- TUS DATOS ---
+    // datos para un usuraio de prueba
     private final String USUARIO = "gonza578.gm@gmail.com";
     private final String PASSWORD = "12345678"; 
     
@@ -54,6 +54,7 @@ public class GramolaSeleniumTest {
     private final String SPOTIFY_COOKIE_VALUE = "AQBSb0PwE-oMa-68X47tmMYZ96otXznzdhgt5pSWydFwV5BCby6YMJS5hxvPQx6D0o0kv7-_YapSTeFbeT6RQIBZC5Vr6-cJJrOYGpKHdPgdETdpwsv1Avi_NAv6YOKAkf9XBi2kR8IYBWAlRhZ8UFIK7YJbWBBxFU8zzoTerS07u4nKrp5qvnaHXvQO-oRV3r12O70qcMFAQAiy2w";
 
     @BeforeEach
+    //configura el entorno antes de cada test
     public void setUp() {
         if(userDao.existsById(USUARIO)) {
             userDao.deleteById(USUARIO);
@@ -102,7 +103,6 @@ public class GramolaSeleniumTest {
 
         rellenarStripe("4242424242424242", "1228", "123", "13071");
 
-        // Usamos el ID exacto que tienes en payments.html: id="submit-btn"
         WebElement btnPagar = wait.until(ExpectedConditions.elementToBeClickable(By.id("submit-btn")));
         btnPagar.click();
         
@@ -128,7 +128,7 @@ public class GramolaSeleniumTest {
         btnPagar.click();
         
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("card-error"), "válido"));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("card-error"), "no es válido"));
         
         WebElement errorMsg = driver.findElement(By.id("card-error"));
         
@@ -143,9 +143,7 @@ public class GramolaSeleniumTest {
         
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email"))).sendKeys(USUARIO);
         driver.findElement(By.id("password")).sendKeys(PASSWORD);
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-
-        gestionarPermisosSpotifySiAparecen(); 
+        driver.findElement(By.cssSelector("button[type='submit']")).click(); 
 
         wait.until(ExpectedConditions.urlContains("/music"));
         WebElement btnAbrir = wait.until(ExpectedConditions.elementToBeClickable(
@@ -153,7 +151,6 @@ public class GramolaSeleniumTest {
         ));
         btnAbrir.click();
 
-        // 4. Esperar a que salga la barra de búsqueda (Confirmamos que se ha abierto)
         wait.until(ExpectedConditions.visibilityOfElementLocated(
             By.cssSelector("input[placeholder*='Escribe']")
         ));
@@ -167,25 +164,13 @@ public class GramolaSeleniumTest {
         ));
         btnComprar.click();
 
-        // Esperamos a que aparezca el título H3 dentro del form (lo que indica que payments.ts ha hecho showForm)
+        // Esperamos a que aparezca el título H3 dentro del form de pago 
         wait.until(ExpectedConditions.visibilityOfElementLocated(
             By.xpath("//h3[contains(text(),'Pagar Canción')]")
         ));
     }
 
-    private void gestionarPermisosSpotifySiAparecen() { 
-        try { Thread.sleep(1500); } catch (InterruptedException e) {} 
-        if (driver.getCurrentUrl().contains("spotify")) {
-            try {
-                List<WebElement> btns = driver.findElements(By.xpath("//button[@data-testid='auth-accept' or contains(., 'Aceptar') or contains(., 'Agree')]"));
-                if (!btns.isEmpty()) btns.get(0).click();
-            } catch (Exception e) {}
-        }
-    }
-
     private void buscarCancion(String termino) {
-        if (driver.getCurrentUrl().contains("spotify")) throw new RuntimeException("ERROR: Seguimos en Spotify.");
-
         WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(
             By.cssSelector("input[placeholder*='título']")
         ));
@@ -198,40 +183,35 @@ public class GramolaSeleniumTest {
         try { Thread.sleep(1500); } catch (InterruptedException e) {}
     }
 
-    // --- MÉTODO CORREGIDO PARA ESCRIBIR EN STRIPE ---
+    // metodo para rellenar los datos de Stripe entrando en el iframe
     private void rellenarStripe(String tarjeta, String fecha, String cvc, String cp) {
-        // 1. Esperar al iframe
+        // esperar al iframe
         WebElement iframe = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("iframe[name^='__privateStripeFrame']")));
-        
-        // 2. Entrar al iframe
+        // cambiar el contexto al iframe
         driver.switchTo().frame(iframe);
         
         // Inicializar Actions
         Actions actions = new Actions(driver);
 
-        // --- TARJETA ---
         WebElement cardInput = wait.until(ExpectedConditions.elementToBeClickable(By.name("cardnumber")));
-        // CLAVE: Click + SendKeys en la misma acción para forzar el foco
+        // este es el click + SendKeys en la misma acción para forzar el foco
         actions.moveToElement(cardInput).click().sendKeys(tarjeta).perform();
         try { Thread.sleep(200); } catch (InterruptedException e) {}
 
-        // --- FECHA ---
+        // fecha de caducidad
         WebElement dateInput = driver.findElement(By.name("exp-date"));
         actions.moveToElement(dateInput).click().sendKeys(fecha).perform();
         try { Thread.sleep(200); } catch (InterruptedException e) {}
 
-        // --- CVC ---
+        // cvc
         WebElement cvcInput = driver.findElement(By.name("cvc"));
         actions.moveToElement(cvcInput).click().sendKeys(cvc).perform();
         try { Thread.sleep(200); } catch (InterruptedException e) {}
 
-        // --- CP (Opcional) ---
-        
+        // cp
          WebElement postalInput = driver.findElement(By.name("postal"));
         actions.moveToElement(postalInput).click().sendKeys(cp).perform();
-        
-        
-        // 3. Salir del iframe
+
         driver.switchTo().defaultContent();
     }
 }
