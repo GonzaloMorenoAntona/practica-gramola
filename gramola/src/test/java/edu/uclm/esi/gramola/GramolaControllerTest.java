@@ -29,7 +29,7 @@ public class GramolaControllerTest {
     @Autowired
     private UserDao userDao;
 
-    // CASO 1: Intentar registrarse con contraseñas distintas (Debe fallar)
+    // CASO 1: Intentar registrarse con contraseñas distintas 
     @Test
     @Order(1)
     void testRegistroFallidoPassword() throws Exception {
@@ -47,7 +47,7 @@ public class GramolaControllerTest {
                 .andExpect(status().isConflict());
     }
 
-    // CASO 2: Registro correcto (Debe funcionar)
+    // CASO 2: Registro correcto 
     @Test
     @Order(2)
     void testRegistroCorrecto() throws Exception {
@@ -65,7 +65,7 @@ public class GramolaControllerTest {
                 .andExpect(status().isOk());
     }
     
-    // CASO 3: Login Fallido (Usuario no confirmado)
+    // CASO 3: Login Fallido por Usuario no confirmado
     @Test
     @Order(3)
     void testLoginFallido() throws Exception {
@@ -79,20 +79,20 @@ public class GramolaControllerTest {
                 .andExpect(status().isNotAcceptable());
     }
 
-    // CASO 4: Confirmar Cuenta y Login Correcto (IMPORTANTE: Este va antes que el duplicado)
+    // CASO 4: Confirmar Cuenta y Login Correcto 
     @Test
     @Order(4)
     void testLoginCorrecto() throws Exception {
-        // 1. Buscamos el usuario en la BD para coger su token real
+        // buscamos el usuario en la BD para coger su token real
         User pepe = userDao.findById("pepe@prueba.com").orElseThrow();
         String token = pepe.getCreationToken().getId();
 
-        // 2. Simulamos el clic en el enlace de confirmación
+        // simulamos el clic en el enlace de confirmación
         this.server.perform(get("/users/confirmToken/pepe@prueba.com")
                 .param("token", token))
                 .andExpect(status().is3xxRedirection()); // Esperamos redirección al pago
 
-        // 3. Login correcto ahora que está confirmado
+        // login correcto ahora que está confirmado
         JSONObject credenciales = new JSONObject();
         credenciales.put("email", "pepe@prueba.com");
         credenciales.put("pwd", "patata123");
@@ -103,7 +103,7 @@ public class GramolaControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // CASO 5: Registro Duplicado (Debe fallar PORQUE YA ESTÁ CONFIRMADO)
+    // CASO 5: Registro Duplicado el cual debe fallar porque ya existe el usuario
     @Test
     @Order(5)
     void testRegistroDuplicado() throws Exception {
@@ -121,7 +121,7 @@ public class GramolaControllerTest {
                 .andExpect(status().isConflict()); // Error 409
     }
 
-    // CASO 6: Login con contraseña mal (Seguridad)
+    // CASO 6: Login con contraseña mal 
     @Test
     @Order(6)
     void testLoginPasswordIncorrecta() throws Exception {
