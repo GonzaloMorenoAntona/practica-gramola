@@ -16,6 +16,9 @@ public class SpotiToken {
     @JsonProperty("expires_in")
     private int expiresIn;
 
+    @JsonProperty("refresh_token")
+    private String refreshToken;
+
     // Getters y Setters
     public String getAccessToken() {
         return accessToken;
@@ -40,14 +43,11 @@ public class SpotiToken {
     public void setExpiresIn(int expiresIn) {
         this.expiresIn = expiresIn;
     }
-
-    // Opcional: toString, equals, hashCode si los necesitas para depuración o comparación
-    @Override
-    public String toString() {
-        return "SpotiToken{" +
-               "accessToken='" + accessToken + '\'' +
-               ", tokenType='" + tokenType + '\'' +
-               ", expiresIn=" + expiresIn +
-               '}';
+    public String getRefreshToken() {
+        return refreshToken;
+    }  
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
+
 }
