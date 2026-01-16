@@ -115,7 +115,7 @@ public class PaymentService {
     public StripeTransaction prepay(double amount, String email) throws StripeException {
         long amountInCents = (long) (amount * 100); 
 
-        PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
+        PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder() 
                 .setCurrency("eur")
                 .setAmount(amountInCents)
                 .build();

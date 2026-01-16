@@ -53,7 +53,7 @@ export class SpotifyService {
   getAuthorizationToken(code: string): Observable<any> {
       // llamar al backend para intercambiar el código por el token 
     let url = `${this.backendUrl}/getAuthorizationToken?code=${code}&clientId=${sessionStorage.getItem("clientId")}`;
-    return this.http.get(url)
+    return this.http.get(url)//esto devuelve el token
   }
   // método para generar un string aleatorio para el state, para evitar CSRF
   private generateString(): string {
