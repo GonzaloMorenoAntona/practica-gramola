@@ -39,19 +39,8 @@ public class UserController {
         String clientId = body.get("clientId");
         String clientSecret = body.get("clientSecret");
 
-        // Validaciones básicas (Capa de entrada)
-        if (!pwd1.equals(pwd2)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Las contraseñas no coinciden");
-        }
-        if (pwd1.length() < 8) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "La contraseña debe tener al menos 8 caracteres");
-        }
-        if (!email.contains("@") || !email.contains(".")) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email no válido");
-        }
-
         // Delegamos TODA la lógica al servicio 
-        this.userService.register(bar, email, pwd1, clientId, clientSecret);
+        this.userService.register(bar, email, pwd1, pwd2, clientId, clientSecret);
     }
 
     @GetMapping("/confirmToken/{email}")

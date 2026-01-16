@@ -1,4 +1,4 @@
-// src/main/java/edu/uclm/esi/gramola/services/SpotiService.java
+
 package edu.uclm.esi.gramola.services;
 
 
@@ -11,7 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClient; // Usamos RestClient, que es la forma moderna
+import org.springframework.web.client.RestClient; 
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -31,7 +31,7 @@ public class SpotiService {
 
 
     public SpotiToken getAuthorizationToken(String code, String clientId) { //el code es un código temporal de spotify
-        // 1. Buscar el User usando el clientId
+        // buscar el User usando el clientId
         Optional<User> userOpt = userDao.findByClientId(clientId);
         if (userOpt.isEmpty()) {
              throw new RuntimeException("User not found for clientId: " + clientId);
@@ -41,11 +41,11 @@ public class SpotiService {
 
         // preparar el cuerpo de la petición POST a Spotify
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("code", code); //el codigo que nos da spotify
+        form.add("code", code); //el codigo temporal que nos da spotify
         form.add("grant_type", "authorization_code"); //grant_type es un codigo de autorizacion
         form.add("redirect_uri", REDIRECT_URI); 
 
-        // 3. Preparar la cabecera de autenticación Basic
+        // preparar la cabecera de autenticación Basic
         String header = this.basicAuth(clientId, clientSecret); //codifica en base64 el clientId y clientSecret
         RestClient restClient = RestClient.create(); // Crear una instancia de RestClient
 
@@ -60,7 +60,7 @@ public class SpotiService {
         return token; //devuelve el token que contiene access token y refresh token
 
     }
-    // método auxiliar para crear la cabecera de autenticación Basic
+    // método auxiliar para crear la cabecera de autenticación Basic, ya que hay que codificar el clientId y clientSecret en base64
     private String basicAuth(String clientId, String clientSecret) {
         String pair = clientId + ":" + clientSecret;
         return "Basic " + Base64.getEncoder().encodeToString(pair.getBytes(StandardCharsets.UTF_8));

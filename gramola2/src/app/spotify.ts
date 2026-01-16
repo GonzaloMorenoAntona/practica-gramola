@@ -13,7 +13,7 @@ export class SpotifyService {
   private readonly redirectUrl: string = 'http://127.0.0.1:4200/callback'; 
   private readonly spotiV1Url: string = 'https://api.spotify.com/v1';
 
-  // Scopes solicitados 
+  // Scopes solicitados que sirven para las distintas funcionalidades
   private readonly scopes: string[] = [
     "user-read-private", "user-read-email", "playlist-read-private",
     "playlist-read-collaborative", "user-read-playback-state",
@@ -51,7 +51,7 @@ export class SpotifyService {
   }
 
   getAuthorizationToken(code: string): Observable<any> {
-      // recuperar clientId de sessionStorage
+      // llamar al backend para intercambiar el código por el token 
     let url = `${this.backendUrl}/getAuthorizationToken?code=${code}&clientId=${sessionStorage.getItem("clientId")}`;
     return this.http.get(url)
   }

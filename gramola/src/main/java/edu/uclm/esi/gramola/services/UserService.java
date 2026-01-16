@@ -26,7 +26,16 @@ public class UserService {
         this.mailSender = mailSender;
     }
 
-    public void register(String bar, String email, String pwd, String clientId, String clientSecret) {
+    public void register(String bar, String email, String pwd1, String pwd2, String clientId, String clientSecret) {
+        if (!pwd1.equals(pwd2)) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Las contraseñas no coinciden");
+    }
+    if (pwd1.length() < 8) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "La contraseña debe tener al menos 8 caracteres");
+    }
+    if (email == null || !email.contains("@") || !email.contains(".")) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email no válido");
+    }
         // valida si existe
         Optional<User> existing = userDao.findById(email);
         if (existing.isPresent()) {
@@ -42,7 +51,7 @@ public class UserService {
         User user = new User();
         user.setBarName(bar);
         user.setEmail(email);
-        user.setPwd(PasswordUtil.hash(pwd));
+        user.setPwd(PasswordUtil.hash(pwd1));
         user.setClientId(clientId);
         user.setClientSecret(clientSecret);
         
