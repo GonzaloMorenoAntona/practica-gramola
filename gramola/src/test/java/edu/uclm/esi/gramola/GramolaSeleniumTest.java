@@ -208,10 +208,6 @@ public class GramolaSeleniumTest {
         actions.moveToElement(cvcInput).click().sendKeys(cvc).perform();
         try { Thread.sleep(200); } catch (InterruptedException e) {}
 
-        // cp
-         WebElement postalInput = driver.findElement(By.name("postal"));
-        actions.moveToElement(postalInput).click().sendKeys(cp).perform();
-
         driver.switchTo().defaultContent();
     }
 }
