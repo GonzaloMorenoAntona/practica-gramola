@@ -134,7 +134,7 @@ export class PaymentComponent implements OnInit {
         if (response.paymentIntent.status === 'succeeded') {
             
             if (self.mode === 'subscription') {
-                self.PaymentService.confirm(self.transactionDetails.id, self.token!).subscribe({
+                self.PaymentService.confirm(self.transactionDetails.id, self.token!, self.selectedPlanId!).subscribe({
                     next: () => self.router.navigate(["/login"]),
                     error: (err) => alert("Error al confirmar: " + err.message)
                 });

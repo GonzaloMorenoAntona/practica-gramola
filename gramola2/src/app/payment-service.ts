@@ -28,8 +28,8 @@ export class PaymentService {
   } 
 
  // metodo para confirmar el pago
-  confirm(transactionId: string, token: string): Observable<any> {
-    const body = { transactionId, token };
+  confirm(transactionId: string, token: string, priceId: number): Observable<any> {
+    const body = { transactionId, token, priceId };
     return this.client.post('http://127.0.0.1:8080/payments/confirm', body, {
       withCredentials: true,
       observe: 'response'

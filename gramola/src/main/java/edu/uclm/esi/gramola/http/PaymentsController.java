@@ -53,16 +53,21 @@ public class PaymentsController {
     }
     // valida el pago una vez introducidos los datos de la tarjeta
     @PostMapping("/confirm")
-    public ResponseEntity<Map<String, String>> confirm(HttpSession session, @RequestBody Map<String, String> body) {
-        String token = body.get("token");
-        String transactionId = body.get("transactionId");
+    public ResponseEntity<Map<String, String>> confirm(HttpSession session, @RequestBody Map<String, Object> body) {
+        Object tokenObj =  body.get("token");
+        Object transactionIdObj =  body.get("transactionId");
+        Object priceIdObj =  body.get("priceId");
 
-        if (token == null || transactionId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Faltan parámetros (token o transactionId)");
+        if (tokenObj == null || transactionIdObj == null || priceIdObj == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Faltan parámetros en la solicitud.");
         }
 
         try {
-            this.service.confirmarPagoRegistro(token, transactionId);
+            String token = tokenObj.toString();
+            String transactionId = transactionIdObj.toString();
+            
+            Long priceId = Long.parseLong(priceIdObj.toString());
+            this.service.confirmarPagoRegistro(token, transactionId, priceId);
 
             session.removeAttribute("transactionDetails");
             

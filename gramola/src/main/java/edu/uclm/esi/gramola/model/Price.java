@@ -19,12 +19,16 @@ public class Price {
     @Column(nullable = false)
     private String type;    // Ej: "SUBSCRIPTION" o "SONG"
 
+    @Column(nullable = false)
+    private Long duration;  // Duración en segundos 
+
     public Price() {}
 
-    public Price(String name, Double value, String type) {
+    public Price(String name, Double value, String type, Long duration) {
         this.name = name;
         this.value = value;
         this.type = type;
+        this.duration = duration;
     }
 
     // Getters y Setters
@@ -39,4 +43,7 @@ public class Price {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public Long getDuration() { return duration; }
+    public void setDuration(Long duration) { this.duration = duration; }
 }

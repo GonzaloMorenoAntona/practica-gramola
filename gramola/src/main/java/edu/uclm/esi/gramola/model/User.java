@@ -23,7 +23,9 @@ public class User {
 
     private boolean active = false;
     private boolean paid = false;
+    private String subscriptionType;
     private Date validationDate;
+    private long subscriptionEndDate;
    
      @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "token_id", referencedColumnName = "id")
@@ -56,12 +58,20 @@ public class User {
     public boolean isPaid() { return paid; }
     public void setPaid(boolean paid) { this.paid = paid; }
 
+    public String getSubscriptionType() { return subscriptionType; }
+    public void setSubscriptionType(String subscriptionType) { this.subscriptionType = subscriptionType; }
+
     public Date getValidationDate() { return validationDate; }
     public void setValidationDate(Date validationDate) { this.validationDate = validationDate; }
+
+    public long getSubscriptionEndDate() { return subscriptionEndDate; }
+    public void setSubscriptionEndDate(long subscriptionEndDate) { this.subscriptionEndDate = subscriptionEndDate; }
 
     public Token getRecoveryToken() { return recoveryToken; }
     public void setRecoveryToken(Token recoveryToken) { this.recoveryToken = recoveryToken; }
 
-    
+    public boolean isSubscriptionActive() {
+        return this.subscriptionEndDate > System.currentTimeMillis();
+    }
 
 }

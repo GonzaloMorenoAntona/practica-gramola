@@ -73,19 +73,32 @@ public class PaymentService {
     }
 
     // Lógica para /confirm 
-    public void confirmarPagoRegistro(String tokenValue, String transactionId) {
+    public void confirmarPagoRegistro(String tokenValue, String transactionId, Long priceId) {
         User user = this.findByCreationToken(tokenValue); //busca el usuario por el token
         //  valida el token
         Token userToken = user.getCreationToken();
         if (userToken == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no tiene un token de confirmación pendiente.");
         }
+        Price elPlan = this.priceDao.findById(priceId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El plan de precio no existe"));
         
         // consumir el token y activar usuario
         userToken.use();
         user.setActive(true);
         user.setPaid(true);
         user.setValidationDate(new Date());
+
+        user.setSubscriptionType(elPlan.getName());
+
+        long duracionMilisegundos = elPlan.getDuration() * 24L * 60 * 60 * 1000;
+        long ahora = System.currentTimeMillis();
+
+        if (user.getSubscriptionEndDate() > ahora) {
+            user.setSubscriptionEndDate(user.getSubscriptionEndDate() + duracionMilisegundos);
+        } else {
+            user.setSubscriptionEndDate(ahora + duracionMilisegundos);
+        }
 
         this.userDao.save(user);
     }
