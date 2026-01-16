@@ -89,7 +89,7 @@ export class PaymentComponent implements OnInit {
     }
     
     // Creamos la tarjeta
-    let card = elements.create("card", { style: style })
+    let card = elements.create("card", { style: style, hidePostalCode: true})
     card.mount("#card-element")
     
     // Listener de errores
