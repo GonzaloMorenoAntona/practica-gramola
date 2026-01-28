@@ -107,12 +107,12 @@ export class SpotifyService {
   prepareSongPayment(songName: string, email: string): Observable<any> {
     return this.http.post('http://127.0.0.1:8080/payments/prepay-song', { songName, email });
   }
-  saveSongInDb(track: any, barName: string): Observable<any> {
+  saveSongInDb(track: any, barEmail: string): Observable<any> {
     const url = 'http://127.0.0.1:8080/songs/add';
     const body = {
       title: track.name,
       artist: track.artists[0].name,
-      bar: barName 
+      bar: barEmail
     };
     return this.http.post(url, body);
   }

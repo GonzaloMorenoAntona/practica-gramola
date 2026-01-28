@@ -104,8 +104,8 @@ export class ClientComponent implements OnInit, OnDestroy {
     this.showPaymentModal = false; // Cerramos modal
     this.addSongToQueue(track);
     
-    let barName = sessionStorage.getItem('barName') || 'Bar Desconocido';
-    this.spoti.saveSongInDb(track, barName).subscribe();
+    let barId = sessionStorage.getItem('barEmail') || 'Bar Desconocido';
+    this.spoti.saveSongInDb(track, barId).subscribe();
   }
 
   addSongToQueue(track: any) {
