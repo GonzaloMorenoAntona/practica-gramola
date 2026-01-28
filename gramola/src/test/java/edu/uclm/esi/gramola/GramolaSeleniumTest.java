@@ -1,10 +1,11 @@
 package edu.uclm.esi.gramola;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 import java.time.Duration;
-import java.util.List;
+
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +24,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import edu.uclm.esi.gramola.dao.SongDao;
 import edu.uclm.esi.gramola.dao.StripeTransactionDao;
 import edu.uclm.esi.gramola.dao.UserDao;
-import edu.uclm.esi.gramola.model.StripeTransaction;
 import edu.uclm.esi.gramola.model.Token;
 import edu.uclm.esi.gramola.model.User;
 import edu.uclm.esi.gramola.services.PasswordUtil;
@@ -35,7 +36,7 @@ import edu.uclm.esi.gramola.services.PasswordUtil;
 public class GramolaSeleniumTest {
 
     @Autowired
-    private StripeTransactionDao transactionDao;
+    private SongDao songDao ;
     
     @Autowired
     private UserDao userDao;
@@ -63,7 +64,7 @@ public class GramolaSeleniumTest {
         User gonza = new User();
         gonza.setEmail(USUARIO);
         gonza.setPwd(PasswordUtil.hash(PASSWORD)); 
-        gonza.setBarName("Bar Selenium");
+        gonza.setBarName("Bar Prueba");
         gonza.setClientId(REAL_CLIENT_ID);
         gonza.setClientSecret(REAL_CLIENT_SECRET);
         Token token = new Token();
@@ -98,6 +99,7 @@ public class GramolaSeleniumTest {
     @Order(1)
     void testCompraCancionCorrecta() {
         System.out.println("primer test, compra correcta");
+        long cantidadInicial = songDao.count();
         
         realizarFlujoLoginYBusqueda(); 
 
@@ -109,8 +111,8 @@ public class GramolaSeleniumTest {
         wait.until(ExpectedConditions.invisibilityOf(btnPagar));
         
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        List<StripeTransaction> pagos = transactionDao.findAll();
-        assertTrue(pagos.size() > 0, "Fallo: No se guardó el pago.");
+        long cantidadFinal = songDao.count();
+        assertEquals(cantidadInicial + 1, cantidadFinal, "Fallo: No se guardó el pago.");
         System.out.println("TEST 1, el pago ha sido realizado.");
     }
 
