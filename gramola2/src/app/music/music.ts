@@ -18,7 +18,7 @@ export class MusicComponent implements OnDestroy {
   
   isAdmin: boolean = true;
 
-  // Accedemos al hijo (ClientComponent) para poder decirle que recargue la cola
+  // Accedemos al ClientComponent para poder decirle que recargue la cola
   @ViewChild(ClientComponent) clientComponent!: ClientComponent;
 
   toggleMode() {
@@ -26,7 +26,7 @@ export class MusicComponent implements OnDestroy {
     this.userService.showNavbar.set(this.isAdmin); //mostrar u ocultar la barra de navegación
   }
 
-  // esta función se ejecuta cuando PlaylistsComponent nos avisa de que ha puesto música
+  // esta función se ejecuta cuando Playlists nos avisa de que ha puesto música
   onPlaylistPlayed() {
     console.log("Playlist activada, mandando señal al cliente...");
     
