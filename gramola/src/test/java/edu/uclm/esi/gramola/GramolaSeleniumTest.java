@@ -75,7 +75,7 @@ public class GramolaSeleniumTest {
         driver.manage().window().maximize();
         wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
-        driver.get("https://accounts.spotify.com/en/login"); 
+        driver.get("https://accounts.spotify.com/authorize"); 
 
         Cookie cookie = new Cookie.Builder("sp_dc", SPOTIFY_COOKIE_VALUE)
                 .domain(".spotify.com")
